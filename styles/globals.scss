@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+:root {
+  --color-primary: #03045e;
+  --color-secondary: #00b4d8;
+  --color-success: #80aa7a;
+  --color-warning: #f98627;
+  --color-failure: #e63946;
+  --color-white: #ffffff;
+  --color-gray-50: #f8f9fa;
+  --color-gray-200: #e5e7eb;
+  --color-gray-400: #6b7280;
+  --color-gray-900: #111827;
+
+  --font-family: 'Open Sans', sans-serif;
+  --font-family-condensed: 'Open Sans Condensed', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  height: 100%;
+  background-color: var(--color-gray-50);
+  
+}
+
+body {
+  min-height: 100%;
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

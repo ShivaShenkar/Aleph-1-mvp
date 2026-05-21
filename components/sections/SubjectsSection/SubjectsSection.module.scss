@@ -1,0 +1,41 @@
+.section {
+  background: var(--color-gray-50);
+  padding: 20px 0;
+  margin-top:150px;
+}
+
+.inner {
+  max-width: 90%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+}
+
+.gallery {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 6rem;
+  width: 90%;
+}
+
+.row {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 5rem;
+}
+
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .gallery {
+    gap: 2rem;
+  }
+}

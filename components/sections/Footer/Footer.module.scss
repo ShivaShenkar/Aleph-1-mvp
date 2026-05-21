@@ -1,0 +1,68 @@
+.footer {
+  background: var(--color-primary);
+  color: var(--color-gray-200);
+  font-family: var(--font-family);
+
+}
+
+.main {
+  max-width: 80.0625rem;
+  margin: 0 auto;
+  display: flex;
+  justify-content: flex-start;
+  padding: 2rem;
+  gap: 10vw;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.email {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.socials {
+  display: flex;
+  gap: 1rem;
+}
+
+.socialIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease-in-out;
+
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+.nav {
+  display: grid;
+  grid-template-rows: repeat(3, auto);
+  grid-auto-flow: column;
+  gap: 1.6875rem 5rem;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6875rem;
+
+  a {
+    font-size: 1rem;
+    color: var(--color-gray-200);
+  }
+}
+
+.copyright {
+  border-top: 1px solid var(--color-gray-200);
+  padding: 1.25rem 3rem;
+  font-size: 1rem;
+  min-height: 5rem;
+}

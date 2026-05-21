@@ -1,0 +1,58 @@
+.section {
+  background: var(--color-gray-50);
+  padding: 4rem 0;
+  min-height: 90vh;
+}
+
+.inner {
+  max-width: 90%;
+  margin-inline: auto;
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+}
+
+.steps {
+  display: flex;
+  gap: 2rem;
+  width: 100%;
+  max-width: 68rem;
+  justify-content: center;
+  margin-top:5rem;
+}
+
+.step {
+  flex: 1;
+  max-width: 22rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+.stepNumber {
+  font-size: 3.9375rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.stepDescription {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: var(--color-gray-900);
+  max-width: 20rem;
+}
+
+@media (max-width: 768px) {
+  .steps {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .step {
+    max-width: 100%;
+  }
+}

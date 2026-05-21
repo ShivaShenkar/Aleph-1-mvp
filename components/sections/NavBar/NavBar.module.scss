@@ -1,0 +1,45 @@
+.nav {
+  background: var(--color-gray-50);
+  border-bottom: 1px solid var(--color-gray-200);
+  height: 6.3125rem;
+}
+
+.inner {
+  max-width: 90%;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  gap: 2rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-inline-end: auto;
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  a{
+    font-size:1.25rem;
+  }
+}
+
+.logoAndLinks {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-inline-start: auto;
+  padding-inline-start: 1.5rem;
+}

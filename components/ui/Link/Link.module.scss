@@ -1,0 +1,30 @@
+.link {
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-size:1rem;
+  transition: color 0.2s ease-in-out;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -0.125rem;
+    left: 0;
+    right: 0;
+    height: 0.125rem;
+    background: var(--color-secondary);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  &:hover {
+    color: var(--color-secondary);
+
+    &::after {
+      transform: scaleX(1);
+    }
+  }
+}
