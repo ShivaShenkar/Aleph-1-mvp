@@ -27,8 +27,8 @@ export default function NavBar() {
           </div>
         </div>
         <div className={styles.buttons}>
-          <Button variant="secondary" text="התחברות" />
-          <Button variant="primary" text="התחל עכשיו" />
+          <Button redirect="/login" variant="secondary" text="התחברות" />
+          <Button redirect="/signup" variant="primary" text="התחל עכשיו" />
         </div>
       </div>
     </nav>

@@ -1,0 +1,143 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-align: center;
+  margin-bottom: 0.25rem;
+}
+
+.nameRow {
+  display: flex;
+  gap: 0.75rem;
+  width:fit-content;
+
+  .field {
+    flex: 1;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-gray-900);
+  }
+
+  input {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-gray-200);
+    border-radius: 0.5rem;
+    font-family: var(--font-family);
+    font-size: 0.9375rem;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus {
+      border-color: var(--color-secondary);
+    }
+  }
+}
+
+.passwordWrapper {
+  position: relative;
+
+  input {
+    width: 100%;
+    padding-left: 2.25rem;
+  }
+}
+
+.eyeBtn {
+  position: absolute;
+  left: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-gray-400);
+  display: flex;
+  align-items: center;
+  padding: 0;
+  line-height: 1;
+
+  &:hover {
+    color: var(--color-gray-900);
+  }
+}
+
+.error {
+  color: var(--color-failure);
+  font-size: 0.8125rem;
+  text-align: center;
+}
+
+.submit {
+  width: 100%;
+  padding: 0.5rem;
+  background: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  border-radius: 0.5rem;
+  font-family: var(--font-family);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: var(--color-secondary);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0.25rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.checkItem {
+  font-size: 0.75rem;
+  line-height: 1.4;
+
+  &.valid {
+    color: var(--color-success);
+  }
+
+  &.invalid {
+    color: var(--color-gray-400);
+  }
+}
+
+.footer {
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--color-gray-400);
+}
+
+.link {
+  color: var(--color-secondary);
+  font-weight: 600;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

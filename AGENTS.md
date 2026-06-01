@@ -1,17 +1,24 @@
+# Aleph1 AGENTS.md
 
 You are an expert Next.js and TypeScript engineer helping me build
 Aleph1, a desktop-first tutoring marketplace platform.
+
 The platform is fully targeted at an Israeli audience.
+
 All user-facing content must be in Hebrew (RTL).
-English is only allowed in code, variables, and developer comments.
+English is only allowed in:
+- code
+- variable names
+- developer comments
+- technical communication with the developer
 
 Write clean, simple, maintainable code.
 Prioritize clarity over unnecessary abstraction.
-Think like a senior full-stack engineer building a SaaS MVP.
+Think like a senior full-stack engineer building a scalable SaaS MVP.
 
 ---
 
-## Project Overview
+# Project Overview
 
 We are building Aleph1, a tutoring marketplace where:
 
@@ -27,7 +34,7 @@ Tutors can:
 - set availability (calendar slots)
 - receive bookings
 - manage earnings
-- track basic analytics
+- track analytics
 
 Admins can:
 - manage users
@@ -35,111 +42,192 @@ Admins can:
 - verify tutors
 
 MVP scope:
-- authentication (Clerk)
+- authentication
 - tutor discovery
 - booking calendar slots
 - payments
 - reviews
-- notifications (basic)
-- tutor analytics (basic)
+- notifications
+- tutor analytics
 
 Keep the implementation simple and production-ready.
 
 ---
-## Localization Rules (CRITICAL)
+
+# Localization Rules (CRITICAL)
 
 This is an Israeli, Hebrew-first product.
 
-### Language Rules
+## Language Rules
+
 - ALL UI text must be in Hebrew
-- ALL user-facing content must be RTL (right-to-left)
-- English is NOT allowed in UI copy, buttons, labels, error messages, or notifications
-- English is allowed ONLY in:
-  - code
-  - variable names
-  - database fields
-  - internal comments
-  - Chat conversations
+- ALL user-facing content must be RTL
+- English is NOT allowed in:
+  - UI copy
+  - labels
+  - buttons
+  - placeholders
+  - error messages
+  - notifications
 
-## Global Communication Rules
-- All communication with the user MUST be in English unless the user explicitly requests another language.
-- Do NOT automatically switch to Hebrew even if:
-  - the project targets Israeli users
-  - the codebase contains Hebrew
-  - examples/content are written in Hebrew
-- Hebrew may be used only for:
-  - user-facing application content
-  - localization/i18n files
-  - examples explicitly requested by the user
-  - translation tasks
-
-The default conversational language is English.
-
-### UI Requirements
-- Use RTL layout support across the app
-- Ensure proper alignment for Hebrew text
-- Dates and numbers should follow Israeli formatting where relevant
-
-### Developer Rule
-If a feature includes any text rendering:
-→ default to Hebrew unless explicitly instructed otherwise
+English is allowed ONLY in:
+- code
+- variables
+- database fields
+- internal comments
+- developer conversations
 
 ---
 
-## Tech Stack
+# Global Communication Rules
+
+All communication with the developer MUST be in English unless explicitly requested otherwise.
+
+Do NOT automatically switch to Hebrew even if:
+- the project targets Israeli users
+- the codebase contains Hebrew
+- examples contain Hebrew
+
+Hebrew may be used ONLY for:
+- user-facing application content
+- translations
+- localization files
+- explicitly requested examples
+
+Default conversation language = English.
+
+---
+
+# UI & RTL Requirements
+
+- Full RTL support across the app
+- Proper Hebrew alignment
+- Israeli date formatting where relevant
+- Responsive typography
+- Proper RTL spacing and layouts
+
+If rendering text:
+→ default to Hebrew unless explicitly instructed otherwise.
+
+---
+
+# Tech Stack
+
+## Frontend
 
 - Next.js (App Router)
 - TypeScript (strict mode)
 - SCSS Modules
-- MongoDB + Mongoose
-- Clerk for authentication
-- Zustand (client-side state only)
-- Server Actions / Route Handlers (Next.js)
-- CodeRabbit for code review
+- Zustand (client-side UI state only)
 
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+## AWS Backend Stack
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
+- AWS Cognito → authentication
+- AWS DynamoDB → primary NoSQL database
+- AWS RDS PostgreSQL → relational data if needed
+- AWS S3 → file storage
+- AWS CloudFront → CDN
+- AWS SES → emails
+- AWS SNS → notifications
+- AWS SQS → queues/background jobs
+- AWS Lambda → serverless backend tasks
+- AWS API Gateway → API exposure if needed
+- AWS Secrets Manager → secrets management
+- AWS CloudWatch → monitoring/logging
 
-Do NOT introduce new major libraries without approval.
-Ask before installing anything new.
+## Payments
+
+- Stripe
+
+## Development
+
+- Server Actions / Route Handlers
+- ESLint
+- Prettier
+- CodeRabbit
 
 ---
 
+# AWS-First Architecture Rule (CRITICAL)
 
-## Development Philosophy
+All backend infrastructure MUST prioritize AWS-native services.
 
-Build feature by feature.
+Always prefer AWS solutions before introducing third-party services.
+
+Examples:
+- Auth → Cognito
+- Storage → S3
+- Emails → SES
+- Notifications → SNS
+- Queues → SQS
+- Monitoring → CloudWatch
+
+Do NOT introduce:
+- Firebase
+- Supabase
+- Clerk
+- Auth0
+- PocketBase
+- Appwrite
+- or similar backend SaaS tools
+
+unless explicitly approved.
+
+Third-party services are allowed ONLY if:
+- AWS lacks a reasonable solution
+- implementation complexity is dramatically lower
+- or the service is industry-standard for the feature
+
+---
+
+# Infrastructure Philosophy
+
+Prefer:
+- managed AWS services
+- scalable infrastructure
+- secure defaults
+- low operational overhead
+- cost-efficient MVP architecture
+
+Avoid:
+- premature microservices
+- unnecessary Kubernetes setups
+- overengineering
+- self-hosted infrastructure when AWS managed services exist
+
+---
+
+# Development Philosophy
+
+Build feature-by-feature.
 
 For every feature:
 1. Read this file first
 2. Keep implementation minimal
 3. Avoid overengineering
-4. Prefer readability over clever code
+4. Prefer readability over cleverness
 5. Build the smallest working version first
-6. Refactor only when duplication appears
+6. Refactor only after duplication appears
 
 ---
 
-## Architecture Rules
+# Architecture Rules
 
-### Next.js Structure
+## Next.js Structure
 
 - app/ → routes and pages only
 - components/ → reusable UI components
-- features/ → domain-based logic (tutors, booking, payments, etc.)
-- lib/ → utilities, DB, Clerk, helpers
-- store/ → Zustand stores (UI state only)
+- features/ → domain-based logic
+- lib/ → utilities/helpers/aws configs
+- store/ → Zustand stores
 - types/ → shared TypeScript types
-- styles/ → SCSS modules and globals
+- styles/ → SCSS modules/globals
 
 ---
 
-### Feature-Based Architecture (IMPORTANT)
+# Feature-Based Architecture (IMPORTANT)
 
-Organize code by domain:
+Organize by domain.
 
 GOOD:
 - features/tutors/
@@ -149,199 +237,131 @@ GOOD:
 - features/analytics/
 
 BAD:
-- components-only structure
-- utils dumping ground
-- logic inside pages
+- giant utils folders
+- business logic inside pages
+- component-only architecture
 
 ---
 
-## State Management Rules
+# State Management Rules
 
-### Zustand (ONLY client/UI state)
+## Zustand Usage
 
-Use Zustand only for:
-- booking UI state (selected slot, selected tutor)
-- modals (open/close)
-- filters (UI-only)
-- notifications UI state
+Use Zustand ONLY for:
+- modal state
+- filters
+- booking UI state
 - temporary form state
+- notifications UI state
 
-DO NOT store server data like:
+DO NOT store:
 - tutors list
 - bookings list
 - reviews list
-
----
-
-### Server State
-
-Use Next.js Server Components and Server Actions for:
-- fetching tutors
-- fetching bookings
-- fetching reviews
 - payments data
-- analytics data
-
-Use direct `fetch` or database calls inside server components.
-
-No TanStack Query or external data-fetching libraries.
 
 ---
 
-## Database Rules (MongoDB + Mongoose)
+# Server State Rules
 
-- Use Mongoose schemas
-- Always use timestamps: true
-- Always include createdAt / updatedAt
-- Prefer references (ObjectId) over deep nesting
-- Keep schemas simple and normalized
+Use:
+- Server Components
+- Server Actions
+- Route Handlers
 
-Example pattern:
-- tutorId instead of embedding full tutor object
-- subjectIds instead of nested subjects
+Avoid:
+- TanStack Query
+- Redux
+- SWR unless explicitly approved
+
+Use direct AWS/database access inside server logic.
 
 ---
 
-## Authentication Rules
+# Authentication Rules
 
-Use Clerk only.
+Use AWS Cognito only.
 
-Clerk handles:
+Cognito handles:
 - sign in / sign up
 - sessions
-- user identity
+- JWT authentication
+- password reset
+- OAuth providers
 
 Database stores:
-- clerkId
+- cognitoId
 - user profile data
-- role (student / tutor / admin)
+- role
+
+Roles:
+- student
+- tutor
+- admin
 
 NEVER implement custom auth logic.
 
 ---
 
-## UI Rules
+# Database Rules
 
-- Desktop-first SaaS design
-- Clean, minimal UI
-- Reusable components only when needed
-- Avoid premature abstraction
+## DynamoDB
 
-If a component is used only once, keep it inline.
-
-- The product is Hebrew-first (RTL)
-- All UI text must be written in Hebrew
-- Do not introduce English UI copy even for placeholders
-
-
----
-
-## Styling Rules (SCSS)
-
-- Use SCSS Modules only
-- No global style leakage
-- Avoid deeply nested selectors
-- Follow consistent spacing and typography rules
-
-Example:
-Component.module.scss
-
-
-### Responsive Design 
-
-All UI implementations MUST be fully responsive.
-
-Requirements:
-- Support common breakpoints:
-  - Mobile
-  - Tablet
-  - Laptop/Desktop
-  - Wide screens
-- Avoid horizontal scrolling
-- Prevent layout overflow issues
-- Use flexible layouts (`flex`, `grid`)
-- Ensure components scale correctly on smaller screens
-- Navigation, modals, tables, and forms must remain usable on mobile devices
-- Maintain proper spacing and readable typography across screen sizes
-- Test responsiveness before finalizing UI changes
-
-SCSS/CSS Guidelines:
-- Prefer responsive sizing units over fixed pixels:
-  - `rem`
-  - `em`
-  - `vh`
-  - `vw`
-  - `%`
-- Avoid hardcoded `px` values unless absolutely necessary
-- Use media queries for responsive behavior
-- Prefer fluid widths and heights over fixed dimensions
-- Use `min-width`, `max-width`, `min-height`, and `max-height` when appropriate
-
-Agents should prioritize responsive behavior over desktop-only layouts.
----
-
-## Feature Implementation Rules
-
-When building a feature:
-
-1. Understand full requirement first
-2. Identify required files
-3. Implement smallest working version
-4. Connect frontend → backend → DB
-5. Do not touch unrelated code
-6. Ensure type safety
-7. Fix lint/type errors before finishing
-
----
-
-## Booking System (Core Domain)
-
-Important entities:
-- calendar_slot
-- lessonTypes
-- bookings (future abstraction)
-- payments linked to slots
+Use DynamoDB for:
+- scalable application entities
+- notifications
+- lightweight user data
+- analytics snapshots
 
 Rules:
-- booking is always tied to a calendar_slot
-- slot can have maxStudents
-- slot can be recurring or one-time
+- keep items normalized
+- avoid deep nesting
+- use predictable partition/sort keys
+- design for access patterns
+
+## PostgreSQL (RDS)
+
+Use PostgreSQL only for:
+- highly relational data
+- complex joins/reporting
+- transactional consistency requirements
+
+Prefer DynamoDB unless relational complexity justifies PostgreSQL.
 
 ---
 
-## Payments System
+# File Storage Rules
 
-- Each payment belongs to a calendar_slot
-- Payment includes:
-  - totalAmount
-  - platformFee
-  - tutorEarnings
-- Status must be tracked (pending, paid, failed)
+Use AWS S3 only.
 
-Payout system exists for future expansion.
+Examples:
+- tutor profile images
+- attachments
+- certificates
+- lesson materials
 
----
-
-## Reviews System
-
-- Review belongs to:
-  - student
-  - tutor
-  - optional lesson context
-- Rating 1–5 only
-- Optional anonymous reviews allowed
+Rules:
+- never store files directly in database
+- use signed URLs
+- validate upload types/sizes
+- keep uploads private by default
 
 ---
 
-## Notifications
+# Notifications Rules
 
-- Stored per user
-- Simple MVP version only
-- No real-time system required initially
+MVP:
+- store notifications per user
+- simple notification center
+- no real-time requirement initially
+
+Infrastructure:
+- SNS for fan-out notifications
+- SQS for async processing if needed
 
 ---
 
-## Analytics (MVP Level)
+# Analytics Rules
 
 Tutor analytics includes:
 - total revenue
@@ -350,45 +370,228 @@ Tutor analytics includes:
 - average rating
 - profile views
 
-These are derived values, not manually edited.
+Analytics are derived values.
+
+Do NOT manually edit analytics data.
 
 ---
 
-## Code Safety Rules
+# Payments Rules
+
+Use Stripe.
+
+Each payment belongs to:
+- booking
+- calendar_slot
+
+Payment includes:
+- totalAmount
+- platformFee
+- tutorEarnings
+- paymentStatus
+
+Statuses:
+- pending
+- paid
+- failed
+- refunded
+
+Sensitive payment logic MUST remain server-side.
+
+---
+
+# Booking System Rules
+
+Important entities:
+- calendar_slot
+- bookings
+- lesson_types
+
+Rules:
+- booking always belongs to slot
+- slot has maxStudents
+- slot may be recurring
+- payments linked to bookings/slots
+
+---
+
+# Reviews Rules
+
+Review belongs to:
+- student
+- tutor
+- optional lesson context
+
+Rules:
+- rating = 1–5
+- optional anonymous reviews
+- validate review ownership
+
+---
+
+# API & Backend Rules
+
+Prefer:
+- Server Actions
+- Route Handlers
+
+Use Lambda/API Gateway only when:
+- background processing is needed
+- external integrations exist
+- scalability requires separation
+
+Keep architecture simple.
+
+---
+
+# Security Rules (CRITICAL)
 
 - Never expose secrets in client code
-- All sensitive logic must be server-side
-- Validate all input before DB writes
+- Use Secrets Manager for secrets
+- Validate all inputs server-side
 - Never trust frontend data
+- Use least-privilege IAM permissions
+- Keep sensitive logic server-side
+- Sanitize all user-generated content
 
 ---
 
-## TypeScript Rules
+# TypeScript Rules
 
 - Strict mode enabled
-- No `any`
-- Prefer simple types over complex abstractions
+- No any
+- Prefer simple types
 - Shared types go in /types
+
+Avoid:
+- unnecessary generics
+- over-abstracted typing systems
 
 ---
 
-## Communication Rule
+# Styling Rules (SCSS)
 
-When finishing work:
+- Use SCSS Modules only
+- No Tailwind
+- No global leakage
+- Avoid deeply nested selectors
+
+Prefer:
+- rem
+- em
+- %
+- vh/vw
+
+Avoid excessive px usage.
+
+---
+
+# Responsive Design Rules
+
+All UI MUST be fully responsive.
+
+Support:
+- Mobile
+- Tablet
+- Laptop/Desktop
+- Wide screens
+
+Requirements:
+- avoid horizontal scrolling
+- prevent layout overflow
+- use flex/grid layouts
+- ensure usable forms/tables/modals on mobile
+- maintain readable typography
+
+Use:
+- media queries
+- min/max widths
+- fluid layouts
+
+Prioritize responsiveness over desktop-only design.
+
+---
+
+# Component Rules
+
+- Reusable only when necessary
+- If component used once → keep inline
+- Avoid premature abstraction
+- Prefer composition over inheritance
+
+---
+
+# Feature Implementation Rules
+
+When implementing a feature:
+
+1. Understand full requirement
+2. Identify required files
+3. Build smallest working version
+4. Connect frontend → backend → DB
+5. Avoid touching unrelated code
+6. Ensure type safety
+7. Fix lint/type errors before finishing
+
+---
+
+# Code Quality Rules
+
+Write:
+- simple code
+- readable code
+- maintainable code
+
+Avoid:
+- overengineering
+- unnecessary patterns
+- massive abstractions
+- magic logic
+
+Prefer explicitness over cleverness.
+
+---
+
+# Communication Rules
+
+When finishing implementation:
 - explain what was implemented
 - explain how to test it
-- list any assumptions made
+- list assumptions made
 
 Be concise.
 
 ---
 
-## Final Reminder
+# Next.js Compatibility Rule
+
+This Next.js version may differ from training data.
+
+Before using:
+- new APIs
+- routing conventions
+- experimental features
+
+Check:
+node_modules/next/dist/docs/
+
+Pay attention to:
+- deprecations
+- breaking changes
+- updated conventions
+
+---
+
+# Final Reminder
 
 Before every feature:
 
 - Read this file
 - Follow architecture rules
 - Keep code simple
+- Stay MVP-first
 - Avoid overengineering
-- Build MVP-first, scale later
+- Prefer AWS-native solutions
+- Maintain Hebrew RTL UX
+- Ensure responsiveness
+```
