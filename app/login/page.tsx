@@ -1,8 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import {getCurrentUser} from "aws-amplify/auth";
+import { useState, useEffect } from "react";
 import { signIn } from "aws-amplify/auth"; // מייבא את פונקציית ההתחברות של אמזון
 import { useRouter } from "next/navigation";
+
+import '@/utils/amplifyConfig';
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -10,6 +13,19 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+
+  useEffect(() => {
+    // בדיקה האם יש משתמש שכבר מחובר במערכת
+    getCurrentUser()
+      .then(() => {
+        // אם הצלחנו לקבל משתמש, נעביר אותו ישר לדשבורד
+        router.push("/dashboard");
+      })
+      .catch(() => {
+        // אם אין משתמש מחובר (נזרקת שגיאה ב-catch), נשארים בעמוד הלוגין כרגיל
+      });
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +41,7 @@ export default function LoginPage() {
 
       if (isSignedIn) {
         console.log("התחברת בהצלחה!");
-        router.push("/"); // העבר את המשתמש חזרה לעמוד הבית (או לעמוד פרופיל/דשבורד)
+        router.push("/dashboard"); // העבר את המשתמש חזרה לעמוד הבית (או לעמוד פרופיל/דשבורד)
       }
     } catch (err: any) {
       console.error("שגיאת התחברות:", err);

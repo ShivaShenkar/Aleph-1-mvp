@@ -7,7 +7,8 @@ interface lessonsHistoryProps {
 export default function lessonsHistory({ name }: lessonsHistoryProps) {
   return (
     <div>
-      <h1>צהריים טובים, {name}</h1>
+      <h3 style={{ margin: 0 }}>היסטוריית שיעורים מוקלטים</h3>
+      <p style={{ marginTop: 8 }}>רשימת שיעורים מוקלטים תופיע כאן ברגע שיהיו שיעורים.</p>
     </div>
   );
 }

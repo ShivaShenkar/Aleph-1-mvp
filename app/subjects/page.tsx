@@ -1,16 +1,15 @@
 "use client";
 
-import '@/utils/amplifyConfig'; // לכל מקרה שנרצה לבדוק בעתיד הרשאות משתמש
 import NavBar from "@/components/sections/NavBar/NavBar";
 import Footer from "@/components/sections/Footer/Footer";
-import TopicsSelection from "@/components/sections/studentHomePage/subjectsGallery";
+import SubjectsGallery from "@/components/sections/studentHomePage/subjectsGallery";
 
-export default function TopicsPage() {
+export default function SubjectsPageRoute() {
   return (
     <>
       <NavBar />
       <main style={styles.mainContainer}>
-        <TopicsSelection />
+        <SubjectsGallery />
       </main>
       <Footer />
     </>
@@ -22,7 +21,6 @@ const styles = {
     padding: "40px 20px",
     maxWidth: "1200px",
     margin: "0 auto",
-    direction: "rtl" as const,
-    minHeight: "80vh"
+    minHeight: "80vh",
   },
 };
