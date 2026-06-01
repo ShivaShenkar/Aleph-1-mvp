@@ -1,0 +1,29 @@
+@keyframes gradient {
+  0% {
+    background-position: left;
+  }
+  100% {
+    background-position: right;
+  }
+}
+
+.test {
+  font-size: 50px;
+  font-weight: 700;
+  background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+  background-size: 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.test:hover {
+  transform: scale(0.95);
+  transition-duration: 3s;
+  animation: gradient 5s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}

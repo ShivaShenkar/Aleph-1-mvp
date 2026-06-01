@@ -1,0 +1,57 @@
+.howItWorksSection {
+  min-height: 60vh;
+}
+
+.inner {
+  max-width: 90%;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+}
+
+.steps {
+  display: flex;
+  gap: 2rem;
+  width: 100%;
+  max-width: 68rem;
+  justify-content: center;
+}
+
+.step {
+  flex: 1;
+  max-width: 22rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+.stepNumber {
+  font-size: 2.5rem;
+  font-weight: 700;
+  width: 3.5rem;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stepDesc {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: var(--color-gray-900);
+}
+
+@media (max-width: 768px) {
+  .steps {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .step {
+    max-width: 100%;
+  }
+}
