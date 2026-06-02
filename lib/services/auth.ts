@@ -4,10 +4,12 @@ import {
   SignUpCommand,
   InitiateAuthCommand,
   ConfirmSignUpCommand,
+  AdminAddUserToGroupCommand,
+  AdminListGroupsForUserCommand,
   UserNotConfirmedException,
 } from "@aws-sdk/client-cognito-identity-provider";
 import { cookies } from "next/headers";
-import { cognitoClient, COGNITO_CLIENT_ID } from "@/lib/cognito";
+import { cognitoClient, COGNITO_CLIENT_ID, USER_POOL_ID } from "@/lib/cognito";
 
 function getAge(birthdate: string): number {
   const today = new Date();
@@ -51,6 +53,20 @@ export async function signUp(formData: FormData) {
     });
 
     await cognitoClient.send(command);
+
+    const groupName = role === "tutor" ? "Tutors" : "Students";
+    try {
+      await cognitoClient.send(
+        new AdminAddUserToGroupCommand({
+          UserPoolId: USER_POOL_ID,
+          Username: email,
+          GroupName: groupName,
+        })
+      );
+    } catch {
+      // Group assignment failure should not block signup
+    }
+
     return { success: true as const };
   } catch (error: unknown) {
     const message =
@@ -118,21 +134,52 @@ export async function signIn(formData: FormData) {
     }
 
     let role: "student" | "tutor" = "student";
-    const idToken = result.AuthenticationResult?.IdToken;
-    if (idToken) {
-      const payload = JSON.parse(
-        Buffer.from(idToken.split(".")[1], "base64").toString()
+
+    const groupsResult = await cognitoClient.send(
+        new AdminListGroupsForUserCommand({
+          UserPoolId: USER_POOL_ID,
+          Username: email,
+        })
       );
-      role = payload["custom:role"] === "tutor" ? "tutor" : "student";
-    }
+      console.log(groupsResult);
+      const groupNames = groupsResult.Groups?.map((g) => g.GroupName) ?? [];
+      console.log("User groups:", groupNames);
+      role = groupNames.includes("Tutors") ? "tutor" : "student";
 
     return { success: true as const, role };
   } catch (error: unknown) {
-    if (error instanceof UserNotConfirmedException) {
-      return { success: false as const, unconfirmed: true as const };
-    }
+    console.error("Sign-in error:", error);
     const message =
       error instanceof Error ? error.message : "שגיאה בהתחברות";
     return { success: false as const, error: message };
+  }
+}
+export interface CurrentUser {
+  sub: string;
+  email: string;
+  role: "student" | "tutor";
+}
+
+export async function getCurrentUser(): Promise<CurrentUser | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("session_token")?.value;
+
+  if (!token) return null;
+
+  try {
+    const payload = JSON.parse(
+      Buffer.from(token.split(".")[1], "base64").toString()
+    );
+
+    const groups: string[] = payload["cognito:groups"] ?? [];
+    const role = groups.includes("Tutors") ? "tutor" : "student";
+
+    return {
+      sub: payload.sub,
+      email: payload.email,
+      role,
+    };
+  } catch {
+    return null;
   }
 }

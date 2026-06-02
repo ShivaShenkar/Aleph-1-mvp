@@ -4,11 +4,9 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from "./login.module.scss";
 import { signIn } from "@/lib/services/auth";
-import { useAuthRole } from "@/lib/auth-context";
 
 export default function LoginPage() {
   const router = useRouter();
-  const role = useAuthRole();
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
 
@@ -22,7 +20,7 @@ export default function LoginPage() {
     const result = await signIn(form);
 
     if (result.success) {
-      router.push(role === "tutor" ? "/tutor" : "/student");
+      router.push(result.role === "tutor" ? "/tutor" : "/student");
     } else if ("unconfirmed" in result && result.unconfirmed) {
       router.push(`/verify?email=${encodeURIComponent(email)}`);
     } else {
