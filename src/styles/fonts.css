@@ -1,0 +1,8 @@
+/* Global Font Definitions */
+
+@font-face {
+  font-family: 'Comico';
+  src: url('/fonts/Comico-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}

@@ -1,0 +1,57 @@
+.heroOuter {
+  position: relative;
+  overflow: hidden;
+}
+
+.goldText {
+  font-size: 50px;
+  font-weight: 700;
+  background: linear-gradient(to right, #bf953f, #fff374, #b38728, #fff374, #aa771c);
+  background-size: 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+
+.inner {
+  position: relative;
+  z-index: 1;
+  max-width: 90%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: calc(90vh - 8rem);
+  gap: 1.5rem;
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-gray-900);
+}
+
+.subtext {
+  p {
+    font-size: 1rem;
+    color: var(--color-gray-400);
+    line-height: 1.75rem;
+  }
+}
+
+.buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+}

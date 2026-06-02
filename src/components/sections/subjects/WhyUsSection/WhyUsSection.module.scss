@@ -1,0 +1,90 @@
+.inner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4rem;
+  max-width:80vw;
+  margin-inline:auto;
+  margin-top: 40px;
+}
+
+.illustrationCol {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+
+  svg {
+    width: 10rem;
+    height: 10rem;
+    border-radius: 50%;
+  }
+}
+
+.iconLabel {
+  font-family: var(--font-family);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-500);
+}
+
+.textCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+}
+
+.bullet {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-family);
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.5rem;
+  color: var(--color-gray-900);
+}
+
+.checkmark {
+  color: var(--color-secondary);
+  font-weight: 700;
+  font-size: 1.125rem;
+  flex-shrink: 0;
+}
+
+.subText {
+  font-family: var(--font-family);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5rem;
+  color: var(--color-gray-900);
+}
+
+@media (max-width: 768px) {
+  .inner {
+    flex-direction: column-reverse;
+    text-align: center;
+  }
+
+  .bullet {
+    justify-content: center;
+  }
+}
