@@ -1,14 +1,31 @@
 "use client";
 
-interface lessonsHistoryProps {
-  name: string;
+interface Lesson {
+  title?: string;
+  date?: string;
+  status?: string;
 }
 
-export default function lessonsHistory({ name }: lessonsHistoryProps) {
+interface LessonsHistoryProps {
+  lessons?: Lesson[];
+  name?: string;
+}
+
+export default function LessonsHistory({ lessons, name }: LessonsHistoryProps) {
   return (
     <div>
       <h3 style={{ margin: 0 }}>היסטוריית שיעורים מוקלטים</h3>
-      <p style={{ marginTop: 8 }}>רשימת שיעורים מוקלטים תופיע כאן ברגע שיהיו שיעורים.</p>
+      {lessons && lessons.length > 0 ? (
+        <ul style={{ marginTop: 8 }}>
+          {lessons.map((l, idx) => (
+            <li key={idx} style={{ marginBottom: 6 }}>
+              {l.title || "שיעור"} — {l.date || "תאריך לא זמין"}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p style={{ marginTop: 8 }}>רשימת שיעורים מוקלטים תופיע כאן ברגע שיהיו שיעורים.</p>
+      )}
     </div>
   );
 }

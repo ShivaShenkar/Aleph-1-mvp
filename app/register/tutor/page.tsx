@@ -83,13 +83,40 @@ export default function TutorRegisterPage() {
 
       console.log("הרשמה כמורה הצליחה:", userId);
       setSuccess(true);
+
+      const displayName = email.split("@")[0]; // שימוש בחלק הראשון של האימייל כ-display name
+
+      try{
+        const response = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId,
+            email,
+            name: displayName,
+            role,
+          }),
+        });
+
+        if (!response.ok) {
+            console.error("Error saving user to DynamoDB:");
+            }
+            else{
+            console.log("User saved to DynamoDB successfully");
+            }
+    }catch (dbErr) {
+            console.error("Error saving user to DynamoDB:", dbErr);
+        }
+
+      
       if (nextStep?.signUpStep === "CONFIRM_SIGN_UP") {
 
-        alert("נשלח אלייך קוד אימות למייל! יש לאמת את החשבון.");
+        alert("You have been signed up. Please check your email for a verification code");
         // העברה לעמוד האימות החדש יחד עם המייל של המשתמש ב-URL
         router.push(`/confirm-signup?email=${encodeURIComponent(email)}`);
         
       }
+
     } catch (err: any) {
       console.error("שגיאת הרשמה:", err);
       if (err.name === "UsernameExistsException") {
