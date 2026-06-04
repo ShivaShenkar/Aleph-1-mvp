@@ -70,14 +70,28 @@ export default function StudentDashboardPage() {
 
   // סינון השיעורים הקרובים לפי הסטטוס, ובנוסף לפי המקצוע שנבחר!
   const upcoming = lessons.filter(lesson => {
-    const isScheduled = lesson.status === "scheduled";
-    const isBookedByMe =lesson.status === "booked" && lesson.studentIId === profile.userId;
+    // const isScheduled = lesson.status === "scheduled";
+    // const isBookedByMe =lesson.status === "booked" && lesson.studentId === profile.userId;
 
-    if (!isScheduled && !isBookedByMe) return false;
-    if(!selectedCategory ) return true; // אם לא נבחר מקצוע, מציגים את כל השיעורים הקרובים
+    // if (!isScheduled && !isBookedByMe) return false;
+    // if(!selectedCategory ) return true; // אם לא נבחר מקצוע, מציגים את כל השיעורים הקרובים
 
+    // // ניקוי משתנים לטובת השוואה בטוחה בלי בעיות רווחים או אותיות
+    // const lessonSubject = String(lesson.subject || "").trim();
+    // const currentCategory = String(selectedCategory).trim();
 
-    return lesson.subject===selectedCategory; // מציגים רק את השיעורים שמתאימים למקצוע שנבחר
+    // return lessonSubject.includes(currentCategory) || currentCategory.includes(lessonSubject);
+
+    // מציגים כל שיעור שהוא לא "completed"
+    if (lesson.status === "completed") return false;
+    
+    if (!selectedCategory) return true; // אם לא נבחר מקצוע, מציגים הכל
+
+    const lessonSubject = String(lesson.subject || "").trim();
+    const currentCategory = String(selectedCategory).trim();
+
+    return lessonSubject.includes(currentCategory) || currentCategory.includes(lessonSubject);
+
   });
   // פיצול השיעורים בין "קרובים" (עתידיים) לבין "היסטוריה" (בעבר או מוקלטים) לפי שדה הסטטוס או תאריך
   
@@ -120,7 +134,8 @@ export default function StudentDashboardPage() {
 
         {/* 2. רכיב השיעורים הקרובים - יציג רק אם נבחר מקצוע ויש בו שיעורים */}
         {selectedCategory && upcoming.length > 0 ? (
-          <UpcomingLessons lessons={upcoming} />
+          //<UpcomingLessons lessons={upcoming} />
+          <UpcomingLessons lessons={upcoming} studentId={profile?.userId || ""} />
         ) : selectedCategory ? (
           <div style={{ padding: "20px", backgroundColor: "#F8FAFC", borderRadius: "12px", border: "1px dashed #E2E8F0" }}>
             <p style={{ color: "#718096", margin: 0 }}>אין שיעורים קרובים בנושא {selectedCategory}.</p>

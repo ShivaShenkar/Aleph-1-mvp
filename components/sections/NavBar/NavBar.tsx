@@ -4,15 +4,19 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
-import { fetchUserAttributes, signOut } from "aws-amplify/auth";
+import { usePathname } from "next/navigation"; // <-- הוספנו את usePathname
+// 1. הוספנו כאן את getCurrentUser 👇
+import { fetchUserAttributes, signOut, getCurrentUser } from "aws-amplify/auth";
 
 import styles from "./NavBar.module.scss";
 import Link from "@/components/ui/Link/Link";
 import Button from "@/components/ui/Button/Button";
 import '@/utils/amplifyConfig';
 
+
 export default function NavBar() {
   const router = useRouter();
+  const pathname = usePathname(); // <-- כאן אנחנו מקבלים את הנתיב הנוכחי כדי לדעת באיזה עמוד אנחנו נמצאים
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -24,12 +28,11 @@ export default function NavBar() {
           setUserEmail(attributes.email);
           return;
         }
-        // בקוגניטו, המייל בדרך כלל נמצא תחת ה-username או ב-attributes
         setUserEmail(attributes.username || "משתמש מחובר");
       })
       .catch(() => {
         console.log("אין משתמש מחובר");
-        setUserEmail(null); // אין משתמש מחובר
+        setUserEmail(null);
       });
   }, []);
 
@@ -39,11 +42,34 @@ export default function NavBar() {
       await signOut();
       setUserEmail(null);
       setIsMenuOpen(false);
-      
-      window.location.href = "/login"; // טוען מחדש את העמוד כדי לעדכן את הניווט
-      router.push("/login"); // העברה לעמוד התחברות לאחר הניתוק
+      window.location.href = "/login";
+      router.push("/login");
     } catch (error) {
       console.error("שגיאה בתהליך ההתנתקות:", error);
+    }
+  };
+
+  // 🔥 2. הפונקציה החדשה לניתוב חכם בלחיצה על "כניסה למערכת"
+  const handleDashboardRedirect = async () => {
+    try {
+      const cognitoUser = await getCurrentUser();
+      if (cognitoUser) {
+        const response = await fetch(`/api/user/profile?userId=${cognitoUser.userId}`);
+        if (response.ok) {
+          const profile = await response.json();
+          // ניתוב מורה לדשבורד מורים, וסטודנט לדשבורד סטודנטים
+          if (profile.role === "tutor") {
+            router.push("/dashboard/tutor");
+          } else {
+            router.push("/dashboard");
+          }
+        } else {
+          router.push("/dashboard"); // גיבוי
+        }
+      }
+    } catch (err) {
+      // אם הוא לא מחובר בכלל, נשלח אותו להתחבר
+      router.push("/login");
     }
   };
 
@@ -66,7 +92,7 @@ export default function NavBar() {
             </NextLink>
           </div>
 
-          {/* 2. רכיב פרופיל - מופיע רק אם המשתמש מחובר (מימין ללוגו במבנה RTL) */}
+          {/* 2. רכיב פרופיל - מופיע רק אם המשתמש מחובר */}
           {userEmail && (
             <div style={localStyles.profileContainer}>
               <div 
@@ -85,6 +111,13 @@ export default function NavBar() {
                     <span style={localStyles.emailText}>{userEmail}</span>
                   </div>
                   <hr style={localStyles.divider} />
+                  
+                  {/* 🔥 הוספנו פה כפתור מהיר בתוך התפריט של הפרופיל שיוביל לדשבורד הנכון */}
+                  <button onClick={handleDashboardRedirect} style={localStyles.dashboardMenuButton}>
+                    🖥️ אזור אישי (דשבורד)
+                  </button>
+
+                  <hr style={localStyles.divider} />
                   <button onClick={handleSignOut} style={localStyles.logoutButton}>
                     התנתק 🚪
                   </button>
@@ -101,25 +134,36 @@ export default function NavBar() {
           </div>
         </div>
 
-        {/* חלק שמאלי: כפתורי התחברות/הרשמה (יופיעו רק אם המשתמש לא מחובר) */}
-        {!userEmail && (
-          <div className={styles.buttons}>
-            <NextLink href="/login" passHref style={{ textDecoration: "none" }}>
-              <Button variant="secondary" text="התחברות" />
-            </NextLink>
+        {/* חלק שמאלי: כפתורי התחברות/הרשמה או כפתור כניסה דינמי */}
+        <div className={styles.buttons}>
+          {userEmail ? (
+            // הוספנו תנאי: הכפתור יוצג רק אם אנחנו *לא* בתוך עמודי ה-dashboard
+            !pathname.startsWith("/dashboard") ? (
+              <button onClick={handleDashboardRedirect} style={localStyles.navLoginButton}>
+                🚪 כניסה למערכת
+              </button>
+            ) : null // אם אנחנו בדשבורד, לא יורנדר כלום כאן (הכפתור ייעלם)
+          ) : (
+            // אם הוא לא מחובר, נציג את כפתורי ברירת המחדל שלך
+            <>
+              <NextLink href="/login" passHref style={{ textDecoration: "none" }}>
+                <Button variant="secondary" text="התחברות" />
+              </NextLink>
 
-            <NextLink href="/register" passHref style={{ textDecoration: "none" }}>
-              <Button variant="primary" text="התחל עכשיו" />
-            </NextLink>
-          </div>
-        )}
+              <NextLink href="/register" passHref style={{ textDecoration: "none" }}>
+                <Button variant="primary" text="התחל עכשיו" />
+              </NextLink>
+            </>
+          )}
+
+        </div>
 
       </div>
     </nav>
   );
 }
 
-// עיצובים מקומיים לרכיב הפרופיל והחלונית
+// עיצובים מקומיים - הוספתי פה את הסטייל לכפתורים החדשים שתואם לעיצוב שלך
 const localStyles = {
   navDirection: {
     direction: "rtl" as const,
@@ -127,7 +171,7 @@ const localStyles = {
   rightArea: {
     display: "flex",
     alignItems: "center",
-    gap: "15px", // שומר על מרווח קבוע בין הלוגו לאייקון הפרופיל
+    gap: "15px",
   },
   profileContainer: {
     position: "relative" as const,
@@ -175,6 +219,28 @@ const localStyles = {
     fontWeight: "bold" as const,
     color: "#333",
     wordBreak: "break-all" as const,
+  },
+  dashboardMenuButton: {
+    backgroundColor: "#1D2D50",
+    color: "#fff",
+    border: "none",
+    borderRadius: "6px",
+    padding: "8px",
+    fontSize: "13px",
+    fontWeight: "bold" as const,
+    cursor: "pointer",
+    textAlign: "center" as const,
+  },
+  navLoginButton: {
+    padding: "10px 20px",
+    backgroundColor: "#1D2D50",
+    color: "#fff",
+    border: "none",
+    borderRadius: "6px",
+    fontWeight: "bold" as const,
+    cursor: "pointer",
+    fontSize: "14px",
+    boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
   },
   divider: {
     border: "0",
