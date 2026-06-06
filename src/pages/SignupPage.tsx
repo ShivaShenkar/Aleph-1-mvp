@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import styles from "./(auth)/signup/signup.module.scss";
+import styles from "@/styles/signup.module.scss";
 import { useAuthRole } from "@/lib/auth-context";
 import { handleSignUp } from "@/lib/cognitoActions";
 

@@ -1,0 +1,21 @@
+.schedule {
+  padding: 0 2rem;
+  margin-top: 2rem;
+}
+
+.heading {
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 1.75rem;
+  line-height: 2.25rem;
+  color: var(--color-primary);
+  text-align: start;
+  margin-bottom: 1rem;
+}
+
+.days {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}

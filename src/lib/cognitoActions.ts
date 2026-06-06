@@ -5,8 +5,13 @@ import {
   signIn,
   signOut,
   resendSignUpCode,
+  getCurrentUser,
+  fetchAuthSession,
 } from "aws-amplify/auth";
  import { getErrorMessage } from "@/utils/get-error-message";
+ import { useNavigate } from "react-router-dom";
+
+
 
 
 export async function handleSignUp(
@@ -23,6 +28,8 @@ export async function handleSignUp(
           given_name: String(formData.get("firstName")),
           family_name: String(formData.get("lastName")),
           birthdate: String(formData.get("birthdate")),
+          "custom:isTutor": String(formData.get("role")=== "tutor"),
+          "custom:isStudent": String(formData.get("role")=== "student"),
         },
         // optional
         autoSignIn: true,
@@ -34,28 +41,6 @@ export async function handleSignUp(
   return { success: true, message: "Sign-up successful!"};
 }
 
-export async function handleSendEmailVerificationCode(
-  prevState: { message: string; errorMessage: string },
-  formData: FormData
-) {
-  let currentState;
-  try {
-    await resendSignUpCode({
-      username: String(formData.get("email")),
-    });
-    currentState = {
-      ...prevState,
-      message: "Code sent successfully",
-    };
-  } catch (error) {
-    currentState = {
-      ...prevState,
-      errorMessage: getErrorMessage(error),
-    };
-  }
-
-  return currentState;
-}
 
 export async function handleConfirmSignUp(
  email:string,code:string
@@ -96,11 +81,50 @@ export async function handleSignIn(
   return {isVerified: true, success: true, message: "Sign-in successful!"};
 }
 
-export async function handleSignOut() {
-  try {
-    await signOut();
-  } catch (error) {
-    console.log(getErrorMessage(error));
+export function useHandleSignOut() {
+  const navigate = useNavigate();
+  
+  return async () => {
+    try {
+      await signOut();
+      navigate("/login");
+    } catch (error) {
+      console.log(getErrorMessage(error));
+    }
+  };
+}
+
+export async function getUser(){
+  try{
+    const currentUser = await getCurrentUser();
+    const session = await fetchAuthSession();
+    if (!currentUser || !session) {
+      return;
+    }
+    const idToken = session.tokens?.idToken;
+
+    const roles: string[] = [];
+    // @ts-ignore
+    if(idToken?.payload['custom:isTutor'] === "true") {
+      roles.push("tutor");
+    }
+    // @ts-ignore
+    if(idToken?.payload['custom:isStudent'] === "true") {
+      roles.push("student");
+    }
+    // @ts-ignore
+    const givenName = idToken?.payload['given_name'] as string | undefined;
+    // @ts-ignore
+    const familyName = idToken?.payload['family_name'] as string | undefined;
+    return{
+      ...currentUser,
+      roles,
+      givenName,
+      familyName,
+    }
   }
-  redirect("/auth/login");
+  catch(error:unknown){
+    console.error("Error fetching user:", error);
+  }
+  return null;
 }

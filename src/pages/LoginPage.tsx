@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import styles from "./(auth)/login/login.module.scss";
+import styles from "@/styles/login.module.scss";
 import { handleSignIn } from "@/lib/cognitoActions";
 import { useAuthRole } from "@/lib/auth-context";
+import { useAuthStore } from "@/store/authStore";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export default function LoginPage() {
     const result = await handleSignIn(form);
 
     if (result.success) {
+      await useAuthStore.getState().fetchUser();
       navigate(`/${role}`);
     } else if (result.isVerified === false) {
       navigate(`/verify?email=${encodeURIComponent(email)}`);

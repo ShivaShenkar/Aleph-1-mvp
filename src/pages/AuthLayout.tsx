@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
-import styles from "./(auth)/layout.module.scss";
+import styles from "@/styles/authlayout.module.scss";
 import {
   AuthRoleContext,
   AuthRoleSetterContext,
@@ -13,7 +13,7 @@ export default function AuthLayout({
 }) {
   const location = useLocation();
   const [role, setRole] = useState<"student" | "tutor">("student");
-  const showToggle = location.pathname !== "/verify";
+  const showToggle = (location.pathname !== "/verify"&&location.pathname !== "/login");
 
   return (
     <AuthRoleContext.Provider value={role}>

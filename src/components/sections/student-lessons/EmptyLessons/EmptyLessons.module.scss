@@ -1,0 +1,27 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 4rem 2rem;
+}
+
+.title {
+  font-family: var(--font-family);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-gray-400);
+}
+
+.button {
+  font-family: var(--font-family);
+  font-size: 1.125rem;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 10px;
+  background-image: linear-gradient(to bottom left, #3C0272, #0608C4);
+  color: var(--color-white);
+  cursor: pointer;
+}

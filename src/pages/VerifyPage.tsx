@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import styles from "./(auth)/verify/verify.module.scss";
+import styles from "@/styles/verify.module.scss";
 import { handleConfirmSignUp } from "@/lib/cognitoActions";
 
 export default function VerifyPage() {
