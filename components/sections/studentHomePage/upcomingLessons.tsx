@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 
 interface DynamoLesson {
   PK: string;
@@ -36,6 +38,7 @@ interface Props {
 
 
 export default function UpcomingLessons({ lessons, studentId }: Props) {
+  const router = useRouter();
   
   if (!lessons || lessons.length === 0) return null;
 
@@ -96,7 +99,7 @@ export default function UpcomingLessons({ lessons, studentId }: Props) {
     });
 
   const currentStudentId = studentId; // שימוש ב-prop שמגיע מהדשבורד
-
+    
     return (
       <div style={localStyles.container}>
         <h3 style={localStyles.title}>שיעורים קרובים:</h3>
@@ -151,8 +154,25 @@ export default function UpcomingLessons({ lessons, studentId }: Props) {
                             ✏️ הירשם לשיעור
                           </button>
                         )}
+                        <button 
+                          onClick={() => router.push(`/tutor/${lesson.tutorId}`)}
+                          style={{
+                            padding: "8px 16px",
+                            backgroundColor: "#E2E8F0",
+                            color: "#4A5568",
+                            border: "none",
+                            borderRadius: "6px",
+                            fontWeight: "bold",
+                            cursor: "pointer",
+                            marginLeft: "10px" // מרווח בין הכפתורים
+                          }}
+                        >
+                          ℹ️ אודות המורה
+                        </button>
+
                       </div>
                     </div>
+
                   );
                 })}
 
@@ -185,39 +205,15 @@ export default function UpcomingLessons({ lessons, studentId }: Props) {
 // };
 
 const localStyles = {
-  container: {
-    direction: "rtl" as const,
-    marginTop: "20px",
-  },
+  container: {direction: "rtl" as const,marginTop: "20px",},
   title: {
-    fontSize: "18px",
-    fontWeight: "bold" as const,
-    color: "#0A192F",
-    marginBottom: "15px",
+    fontSize: "18px", fontWeight: "bold" as const, color: "#0A192F", marginBottom: "15px",},
+  grid: { display: "flex",flexDirection: "column" as const,gap: "15px",},
+  dayCard: {backgroundColor: "#fff",borderRadius: "10px",border: "1px solid #E2E8F0",padding: "20px",boxShadow: "0 2px 4px rgba(0,0,0,0.02)",
   },
-  grid: {
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: "15px",
+  dayHeader: {display: "flex",flexDirection: "column" as const,alignItems: "center",marginBottom: "10px",
   },
-  dayCard: {
-    backgroundColor: "#fff",
-    borderRadius: "10px",
-    border: "1px solid #E2E8F0",
-    padding: "20px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.02)",
-  },
-  dayHeader: {
-    display: "flex",
-    flexDirection: "column" as const,
-    alignItems: "center",
-    marginBottom: "10px",
-  },
-  dayName: {
-    fontSize: "20px",
-    fontWeight: "bold" as const,
-    color: "#0A192F",
-    margin: "0",
+  dayName: {fontSize: "20px",fontWeight: "bold" as const,color: "#0A192F",margin: "0",
   },
   dayDate: {
     fontSize: "13px",

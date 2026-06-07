@@ -18,6 +18,7 @@ interface Lesson {
   studentId?: string;
 }
 
+
 export default function TutorDashboardPage() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [tutorName, setTutorName] = useState<string>("המורה");
@@ -42,6 +43,7 @@ export default function TutorDashboardPage() {
       if (profileRes.ok) {
         const profileData = await profileRes.json();
         if (profileData.name) setTutorName(profileData.name);
+        setProfile(profileData);
       }
 
       const response = await fetch(`/api/lessons?userId=${cognitoUser.userId}&role=tutor`);
@@ -59,6 +61,8 @@ export default function TutorDashboardPage() {
   useEffect(() => {
     loadTutorData();
   }, []);
+
+
 
   // פונקציית שליחת הטופס ל-API
   const handleCreateLesson = async (e: React.FormEvent) => {
@@ -96,6 +100,52 @@ export default function TutorDashboardPage() {
     }
   };
 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [profile, setProfile] = useState<{ name?: string; about?: string } | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editAbout, setEditAbout] = useState("");
+
+  // אפקט שיעדכן את השדות ברגע שנתוני הפרופיל המקוריים נטענים
+  useEffect(() => {
+    if (profile) {
+      setEditName(profile.name || "");
+      setEditAbout(profile.about || "");
+    }
+  }, [profile]);
+
+
+    const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!(profile as any)?.SK){
+      alert("לא ניתן לעדכן פרופיל: מזהה פרופיל חסר.");
+      return;
+    }
+    try {
+      const response = await fetch("/api/user/profile/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userId: tutorId,
+            profileSK: (profile as any).SK,
+            name: editName,
+            about: editAbout,
+          }),
+      });
+
+      if (response.ok) {
+        alert("הפרופיל עודכן בהצלחה!");
+        setIsEditModalOpen(false);
+        window.location.reload(); // רענון מהיר כדי לראות את השינוי בדשבורד
+      } else {
+        alert("שגיאה בעדכון הפרופיל");
+      }
+    } catch (err) {
+      console.error("Error updating profile:", err);
+    }
+  };
+
+
   if (loading) return <div style={{ direction: "rtl", padding: "20px" }}>טוען נתונים...</div>;
 
   return (
@@ -103,9 +153,26 @@ export default function TutorDashboardPage() {
       <NavBar />
       <main style={{ padding: "40px", backgroundColor: "#F8FAFC", minHeight: "80vh", direction: "rtl" }}>
         <h1 style={{ color: "#0A192F", fontSize: "28px", fontWeight: "bold", marginBottom: "5px" }}>
-          שלום, {tutorName} 👋
-        </h1>
+         
+        שלום, {profile?.name || tutorName} 👋</h1>
         <p style={{ color: "#718096", marginBottom: "30px" }}>מרכז ניהול השיעורים והתלמידים שלך.</p>
+
+        <button
+          onClick={() => setIsEditModalOpen(true)}
+          style={{
+            padding: "10px 20px",
+            backgroundColor: "#00B4D8",
+            color: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            fontSize: "15px",
+            marginTop: "10px"
+          }}
+        >
+          📝 ערוך פרופיל
+        </button>
 
         {/* 🛠️ אזור הטופס לקביעת שיעור חדש */}
         <section style={{ backgroundColor: "#fff", padding: "25px", borderRadius: "12px", border: "1px solid #E2E8F0", marginBottom: "40px", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" }}>
@@ -118,6 +185,14 @@ export default function TutorDashboardPage() {
                 <option value="מדעי המחשב">מדעי המחשב</option>
                 <option value="מתמטיקה">מתמטיקה</option>
                 <option value="פיזיקה">פיזיקה</option>
+                <option value="תנך">תנך</option>
+                <option value="מדעים">מדעים</option>
+                <option value="אנגלית">אנגלית</option>
+                <option value="היסטוריה">היסטוריה</option>
+                <option value="גיאוגרפיה">גיאוגרפיה</option>
+                <option value="ספרות">ספרות</option>
+
+                
               </select>
             </div>
 
@@ -162,9 +237,129 @@ export default function TutorDashboardPage() {
               </div>
             );
           })}
+
+          {isEditModalOpen && (
+            <div style={modalStyles.overlay}>
+              <div style={modalStyles.content}>
+                <h3 style={modalStyles.title}>עדכון פרטי פרופיל</h3>
+                
+                <form onSubmit={handleUpdateProfile} style={modalStyles.form}>
+                  <div style={modalStyles.inputGroup}>
+                    <label style={modalStyles.label}>שם המורה:</label>
+                    <input
+                      type="text"
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      style={modalStyles.input}
+                      required
+                    />
+                  </div>
+
+                  <div style={modalStyles.inputGroup}>
+                    <label style={modalStyles.label}>קצת עליי (תיאור הפרופיל):</label>
+                    <textarea
+                      value={editAbout}
+                      onChange={(e) => setEditAbout(e.target.value)}
+                      style={modalStyles.textarea}
+                      rows={6}
+                      required
+                    />
+                  </div>
+
+                  <div style={modalStyles.actions}>
+                    <button type="submit" style={modalStyles.saveButton}>שמור שינויים</button>
+                    <button type="button" onClick={() => setIsEditModalOpen(false)} style={modalStyles.cancelButton}>ביטול</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
         </div>
       </main>
       <Footer />
     </>
   );
 }
+
+const modalStyles = {
+  overlay: {
+    position: "fixed" as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1000,
+    direction: "rtl" as const,
+  },
+  content: {
+    backgroundColor: "#fff",
+    padding: "30px",
+    borderRadius: "12px",
+    width: "100%",
+    maxWidth: "500px",
+    boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+  },
+  title: {
+    margin: "0 0 20px 0",
+    fontSize: "22px",
+    fontWeight: "bold" as const,
+    color: "#0A192F",
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column" as const,
+    gap: "15px",
+  },
+  inputGroup: {
+    display: "flex",
+    flexDirection: "column" as const,
+    gap: "5px",
+  },
+  label: {
+    fontSize: "14px",
+    fontWeight: "bold" as const,
+    color: "#4A5568",
+  },
+  input: {
+    padding: "10px",
+    borderRadius: "6px",
+    border: "1px solid #CBD5E0",
+    fontSize: "15px",
+  },
+  textarea: {
+    padding: "10px",
+    borderRadius: "6px",
+    border: "1px solid #CBD5E0",
+    fontSize: "15px",
+    fontFamily: "inherit",
+    resize: "vertical" as const,
+  },
+  actions: {
+    display: "flex",
+    gap: "10px",
+    marginTop: "10px",
+  },
+  saveButton: {
+    padding: "10px 20px",
+    backgroundColor: "#27AE60",
+    color: "#fff",
+    border: "none",
+    borderRadius: "6px",
+    fontWeight: "bold" as const,
+    cursor: "pointer",
+  },
+  cancelButton: {
+    padding: "10px 20px",
+    backgroundColor: "#718096",
+    color: "#fff",
+    border: "none",
+    borderRadius: "6px",
+    fontWeight: "bold" as const,
+    cursor: "pointer",
+  },
+};
