@@ -26,9 +26,17 @@ const authConfig: ResourcesConfig["Auth"] = {
 
 
 
+const storageConfig: ResourcesConfig["Storage"] = {
+    S3: {
+        bucket: String(import.meta.env.VITE_S3_BUCKET_NAME),
+        region: String(import.meta.env.VITE_COGNITO_REGION),
+    },
+};
+
 Amplify.configure(
     {
         Auth:authConfig,
+        Storage:storageConfig,
     },
 );
 

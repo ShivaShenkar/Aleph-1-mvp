@@ -1,6 +1,6 @@
 import type { Booking } from "@/models/models";
-import type { DayGroup } from "@/store/slotStore";
-import { useSlotStore } from "@/store/slotStore";
+import type { DayGroup } from "@/store/bookingStore";
+import { useBookingStore } from "@/store/bookingStore";
 import { useAuthStore } from "@/store/authStore";
 
 function groupByNearestDays(bookings: Booking[]): DayGroup[] {
@@ -27,7 +27,7 @@ function groupByNearestDays(bookings: Booking[]): DayGroup[] {
 
 export async function homePageLoad() {
   // Fetch user data
-   await useAuthStore.getState().fetchUser();
+  await useAuthStore.getState().fetchUser();
 
   // TODO: Replace with actual AWS API Gateway call
   // const response = await fetch('/api/student/slots');
@@ -36,7 +36,7 @@ export async function homePageLoad() {
   const bookings: Booking[] = [];
 
   const groups = groupByNearestDays(bookings);
-  useSlotStore.getState().setUpcomingLessons(groups);
+  useBookingStore.getState().setUpcomingLessons(groups);
 }
 
 export async function fetchAllLessons() {
@@ -46,5 +46,42 @@ export async function fetchAllLessons() {
 
   const bookings: Booking[] = [];
 
-  useSlotStore.getState().setAllBookings(bookings);
+  if (bookings.length === 0) return;
+
+  const sorted = [...bookings].sort(
+    (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+  );
+
+  const now = new Date();
+  let splitIdx = -1;
+  for (let i = sorted.length - 1; i >= 0; i--) {
+    if (new Date(sorted[i].startTime) <= now) {
+      splitIdx = i;
+      break;
+    }
+  }
+
+  const center = splitIdx === -1 ? 0 : splitIdx;
+  const PAGE_SIZE = 10;
+  const pages: Booking[][] = [];
+
+  const centerStart = Math.max(0, center - 5);
+  pages.push(sorted.slice(centerStart, centerStart + PAGE_SIZE));
+
+  let pastIdx = centerStart - PAGE_SIZE;
+  while (pastIdx >= 0) {
+    pages.unshift(sorted.slice(pastIdx, pastIdx + PAGE_SIZE));
+    pastIdx -= PAGE_SIZE;
+  }
+
+  let futureIdx = centerStart + PAGE_SIZE;
+  while (futureIdx < sorted.length) {
+    pages.push(sorted.slice(futureIdx, futureIdx + PAGE_SIZE));
+    futureIdx += PAGE_SIZE;
+  }
+
+  const store = useBookingStore.getState();
+  pages.forEach((page, index) => {
+    store.setLessonList(page, index);
+  });
 }

@@ -1,4 +1,4 @@
-import type { DayGroup } from "@/store/slotStore";
+import type { DayGroup } from "@/store/bookingStore";
 import styles from "./DayCard.module.scss";
 
 const HEBREW_DAYS = ["א", "ב", "ג", "ד", "ה", "ו", "ש"];

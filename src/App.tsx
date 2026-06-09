@@ -7,6 +7,12 @@ import StudentSearchPage from './pages/StudentSearchPage/StudentSearchPage';
 import StudentSubjectPage from './pages/StudentSubjectPage';
 import StudentLessonsPage from './pages/StudentLessonsPage/StudentLessonsPage';
 import TutorPage from './pages/TutorMainPage';
+import TutorDashboardPage from './pages/TutorDashboardPage';
+import TutorPaymentsPage from './pages/TutorPaymentsPage';
+import TutorNotificationsPage from './pages/TutorNotificationsPage';
+import TutorAnalyticsPage from './pages/TutorAnalyticsPage';
+import TutorMessagesPage from './pages/TutorMessagesPage';
+import TutorSetupPage from './pages/TutorSetupPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import VerifyPage from './pages/VerifyPage';
@@ -16,6 +22,7 @@ import './styles/fonts.css';
 import './styles/globals.scss';
 import './lib/amplify-config';
 import { ProtectedRoute } from './lib/protectedRoute';
+import { TutorSetupGuard } from './lib/tutorSetupGuard';
 
 export function App() {
   return (
@@ -55,7 +62,22 @@ export function App() {
         } />
         <Route path="/tutor" element={
           <ProtectedRoute requiredRole="tutor">
-            <TutorPage />
+            <TutorSetupGuard requireSetup>
+              <TutorPage />
+            </TutorSetupGuard>
+          </ProtectedRoute>
+        }>
+          <Route index element={<TutorDashboardPage />} />
+          <Route path="payments" element={<TutorPaymentsPage />} />
+          <Route path="notifications" element={<TutorNotificationsPage />} />
+          <Route path="analytics" element={<TutorAnalyticsPage />} />
+          <Route path="messages" element={<TutorMessagesPage />} />
+        </Route>
+        <Route path="/tutor/setup" element={
+          <ProtectedRoute requiredRole="tutor">
+            <TutorSetupGuard requireSetup={false}>
+              <TutorSetupPage />
+            </TutorSetupGuard>
           </ProtectedRoute>
         } />
       </Routes>

@@ -1,10 +1,10 @@
-import { useSlotStore } from "@/store/slotStore";
+import { useBookingStore } from "@/store/bookingStore";
 import NoUpcomingLessons from "./NoUpcomingLessons";
 import DayCard from "./DayCard";
 import styles from "./LessonSchedule.module.scss";
 
 export default function LessonSchedule() {
-  const upcomingLessons = useSlotStore((s) => s.upcomingLessons);
+  const upcomingLessons = useBookingStore((s) => s.upcomingLessons);
 
   if (upcomingLessons.length === 0) return <NoUpcomingLessons />;
 

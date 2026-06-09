@@ -1,50 +1,26 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import StudentNavBar from "@/components/sections/StudentNavBar/StudentNavBar";
 import Heading from "@/components/ui/Heading/Heading";
 import LessonRow from "@/components/sections/student-lessons/LessonRow/LessonRow";
 import EmptyLessons from "@/components/sections/student-lessons/EmptyLessons/EmptyLessons";
-import { useSlotStore } from "@/store/slotStore";
+import { useBookingStore } from "@/store/bookingStore";
 import { fetchAllLessons } from "@/lib/slotActions";
 import styles from "./StudentLessonsPage.module.scss";
 
 export default function StudentLessonsPage() {
   const [pageOffset, setPageOffset] = useState(0);
-  const allBookings = useSlotStore((s) => s.allBookings);
+  const allLessonsMat = useBookingStore((s) => s.allLessonsMat);
 
   useEffect(() => {
     fetchAllLessons();
   }, []);
 
-  const { window: lessonWindow, hasPast, hasFuture } = useMemo(() => {
-    if (allBookings.length === 0) {
-      return { window: [], hasPast: false, hasFuture: false };
-    }
+  const currentPage = allLessonsMat[pageOffset] || [];
+  const hasPast = pageOffset > 0;
+  const hasFuture = pageOffset < allLessonsMat.length - 1;
 
-    const sorted = [...allBookings].sort(
-      (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
-    );
-
-    const now = new Date();
-    let splitIdx = -1;
-    for (let i = sorted.length - 1; i >= 0; i--) {
-      if (new Date(sorted[i].startTime) <= now) {
-        splitIdx = i;
-        break;
-      }
-    }
-
-    const center = splitIdx === -1 ? 0 : splitIdx;
-    const start = Math.max(0, center - 5 + pageOffset * 10);
-    const items = sorted.slice(start, start + 10);
-
-    return {
-      window: [...items].reverse(),
-      hasPast: start > 0,
-      hasFuture: start + 10 < sorted.length,
-    };
-  }, [allBookings, pageOffset]);
-
+  const lessonWindow = [...currentPage].reverse();
   const now = new Date();
 
   return (
@@ -57,7 +33,7 @@ export default function StudentLessonsPage() {
           </Heading>
         </div>
 
-        {allBookings.length === 0 ? (
+        {allLessonsMat.length === 0 ? (
           <EmptyLessons />
         ) : (
           <>

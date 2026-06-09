@@ -1,0 +1,36 @@
+.page {
+  background: #f8f9fa;
+  min-height: 100vh;
+  padding: 32px;
+  box-sizing: border-box;
+}
+
+.container {
+  display: flex;
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+  direction: rtl;
+  align-items: flex-start;
+}
+
+.formPanel {
+  flex-shrink: 0;
+}
+
+.previewPanel {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .container {
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+
+  .formPanel {
+    width: 100%;
+    max-width: 400px;
+  }
+}

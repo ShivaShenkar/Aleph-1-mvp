@@ -14,16 +14,20 @@ export default function SubjectGrid({ subjects, searchValue }: SubjectGridProps)
     const falloff = 600;
     const selector = "[data-slug]";
 
-    function handleMouseMove(e: MouseEvent) {
-      const cards = document.querySelectorAll<HTMLDivElement>(selector);
+    let rafId: number | null = null;
+    let latestX = 0;
+    let latestY = 0;
+    let ticking = false;
 
+    function updateTilt() {
+      const cards = document.querySelectorAll<HTMLDivElement>(selector);
       for (const card of cards) {
         const rect = card.getBoundingClientRect();
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
 
-        const deltaX = e.clientX - centerX;
-        const deltaY = e.clientY - centerY;
+        const deltaX = latestX - centerX;
+        const deltaY = latestY - centerY;
 
         const rotateY = Math.max(-maxTilt, Math.min(maxTilt, (deltaX / falloff) * maxTilt));
         const rotateX = Math.max(-maxTilt, Math.min(maxTilt, (-deltaY / falloff) * maxTilt));
@@ -31,9 +35,21 @@ export default function SubjectGrid({ subjects, searchValue }: SubjectGridProps)
         card.style.transform =
           `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
       }
+      ticking = false;
+    }
+
+    function handleMouseMove(e: MouseEvent) {
+      latestX = e.clientX;
+      latestY = e.clientY;
+      if (!ticking) {
+        rafId = requestAnimationFrame(updateTilt);
+        ticking = true;
+      }
     }
 
     function handleMouseLeaveDoc() {
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      ticking = false;
       const cards = document.querySelectorAll<HTMLDivElement>(selector);
       for (const card of cards) {
         card.style.transform = "perspective(800px) rotateX(0deg) rotateY(0deg)";
@@ -46,6 +62,7 @@ export default function SubjectGrid({ subjects, searchValue }: SubjectGridProps)
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseleave", handleMouseLeaveDoc);
+      if (rafId !== null) cancelAnimationFrame(rafId);
     };
   }, []);
 

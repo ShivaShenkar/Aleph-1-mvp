@@ -22,11 +22,17 @@ export default function LoginPage() {
     const result = await handleSignIn(form);
 
     if (result.success) {
-      await useAuthStore.getState().fetchUser();
-      navigate(`/${role}`);
+      const [status,message] = await useAuthStore.getState().fetchUser();
+      if (status!=200) {
+        result.success=false;
+        result.message=message;
+      }
+      else{
+        navigate(`/${role}`);
+      }
     } else if (result.isVerified === false) {
       navigate(`/verify?email=${encodeURIComponent(email)}`);
-    } else {
+    } if(!result.success) {
       setError(result.message || "שגיאה בהתחברות");
       setPending(false);
     }

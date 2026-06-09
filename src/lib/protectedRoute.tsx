@@ -39,14 +39,11 @@ export function ProtectedRoute({
     return <div>Loading...</div>; // Or a loading spinner
   }
 
-  // Not authenticated - redirect to login
+  // Not authenticated or wrong role
   if (status === "unauthenticated") {
-    if(roles.includes("student")){
-      return <Navigate to="/student" replace />;
-    }
-    if(roles.includes("tutor")){
-      return <Navigate to="/tutor" replace />;
-    }
+    if (roles.includes("student")) return <Navigate to="/student" replace />;
+    if (roles.includes("tutor")) return <Navigate to="/tutor" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return <>{children}</>;
