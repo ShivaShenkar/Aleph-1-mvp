@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import styles from "@/styles/signup.module.scss";
 import { useAuthRole } from "@/lib/auth-context";
@@ -145,6 +145,13 @@ export default function SignupPage() {
       <button className={styles.submit} type="submit" disabled={!canSubmit}>
         {pending ? "נרשם..." : "הירשם"}
       </button>
+
+      <p className={styles.footer}>
+        כבר יש לך חשבון?{" "}
+        <Link to="/login" className={styles.link}>
+          התחבר
+        </Link>
+      </p>
     </form>
   );
 }

@@ -15,7 +15,7 @@ interface Tutor extends User {
 type Student = User;
 
 interface LessonType{
-    id: string;
+    LessonId: string;
     tutorId: string;
     title: string;
     maxStudents: number;

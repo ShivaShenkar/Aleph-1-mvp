@@ -6,13 +6,6 @@
   flex-shrink: 0;
 }
 
-.label {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--color-warning);
-  white-space: nowrap;
-}
-
 .avatar {
   width: 3rem;
   height: 3rem;
@@ -91,20 +84,12 @@
     width: 2.5rem;
     height: 2.5rem;
   }
-
-  .label {
-    font-size: 1rem;
-  }
 }
 
 @media (max-width: 768px) {
   .avatar {
     width: 2rem;
     height: 2rem;
-  }
-
-  .label {
-    font-size: 0.875rem;
   }
 
   .initials {

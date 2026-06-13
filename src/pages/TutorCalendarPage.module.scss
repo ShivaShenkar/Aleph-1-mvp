@@ -1,0 +1,204 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 1.25rem;
+}
+
+.heading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #03045e;
+  margin: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.navBtn {
+  background: none;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #374151;
+  transition: background 0.15s;
+
+  &:hover:not(:disabled) {
+    background: #f3f4f6;
+  }
+}
+
+.navBtnDisabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.weekLabel {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.submitBar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+  padding: 0.75rem 1rem;
+}
+
+.submitBarLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.submitInfo {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.submitError {
+  font-size: 0.8rem;
+  color: #ef4444;
+  font-weight: 500;
+}
+
+.submitActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.submitBtn {
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  border: none;
+  background: #3b82f6;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 100px;
+
+  &:hover:not(:disabled) {
+    background: #2563eb;
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+}
+
+.spinner {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.discardBtn {
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  border: 1px solid #ef4444;
+  background: #fff;
+  color: #ef4444;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background: #fef2f2;
+  }
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.dialog {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 360px;
+  width: 90%;
+}
+
+.dialogText {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  text-align: center;
+}
+
+.dialogActions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.dialogCancel {
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.dialogConfirm {
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  border: none;
+  background: #ef4444;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  &:hover {
+    background: #dc2626;
+  }
+}
+
+.successBtn {
+  padding: 0.5rem 2rem;
+  border-radius: 8px;
+  border: none;
+  background: #22c55e;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  &:hover {
+    background: #16a34a;
+  }
+}

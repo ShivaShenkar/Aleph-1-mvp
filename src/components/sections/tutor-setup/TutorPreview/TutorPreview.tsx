@@ -12,6 +12,19 @@ interface TutorPreviewProps {
   lessonTypes: LessonTypeDraft[];
 }
 
+function calcAge(birthdate: string): number | null {
+  if (!birthdate) return null;
+  const birth = new Date(birthdate);
+  if (isNaN(birth.getTime())) return null;
+  const now = new Date();
+  let age = now.getFullYear() - birth.getFullYear();
+  const monthDiff = now.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < birth.getDate())) {
+    age--;
+  }
+  return age;
+}
+
 export default function TutorPreview({
   gender,
   profilePicPreview,
@@ -22,6 +35,7 @@ export default function TutorPreview({
 }: TutorPreviewProps) {
   const user = useAuthStore((s) => s.user);
   const name = user ? `${user.firstName} ${user.lastName}` : "שם המורה";
+  const age = user ? calcAge(user.birthdate) : null;
 
   function subjectName(slug: string) {
     return subjects.find((s) => s.slug === slug)?.name || slug;
@@ -49,11 +63,11 @@ export default function TutorPreview({
           <h1 className={styles.name}>{name}</h1>
           <p className={styles.subtitle}>
             {gender === "male"
-              ? "בן"
+              ? `בן ${age ?? "גיל"}`
               : gender === "female"
-                ? "בת"
-                : "בן/בת"}
-            {location ? ` גיל, ${location}` : " גיל, מיקום"}
+                ? `בת ${age ?? "גיל"}`
+                : `בן/בת ${age ?? "גיל"}`}
+            {location ? `, ${location}` : ", מיקום"}
           </p>
           <div className={styles.rating}>
             <div className={styles.stars}>

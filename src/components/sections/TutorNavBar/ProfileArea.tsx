@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "aws-amplify/auth";
+import { getUrl } from "aws-amplify/storage";
 import { useAuthStore } from "@/store/authStore";
 import { LogOut } from "lucide-react";
 import styles from "./ProfileArea.module.scss";
@@ -9,7 +10,21 @@ export default function ProfileArea() {
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profileUrl, setProfileUrl] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!user?.profilePic) {
+      setProfileUrl(null);
+      return;
+    }
+    const key = user.profilePic.startsWith("/")
+      ? user.profilePic.slice(1)
+      : user.profilePic;
+    getUrl({ key, options: { accessLevel: "protected" } })
+      .then((result) => setProfileUrl(result.url.toString()))
+      .catch(() => setProfileUrl(null));
+  }, [user?.profilePic]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -39,14 +54,13 @@ export default function ProfileArea() {
 
   return (
     <div className={styles.wrapper} ref={menuRef}>
-      <span className={styles.label}>למורה</span>
       <div
         className={styles.avatar}
         onClick={() => setMenuOpen((prev) => !prev)}
       >
-        {user?.profilePic ? (
+        {profileUrl ? (
           <img
-            src={user.profilePic}
+            src={profileUrl}
             alt=""
             className={styles.avatarImg}
           />

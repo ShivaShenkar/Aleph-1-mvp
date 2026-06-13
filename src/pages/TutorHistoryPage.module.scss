@@ -1,0 +1,125 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 60vh;
+}
+
+.headings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid var(--color-secondary);
+  padding-bottom: 0.5rem;
+}
+
+.headerCell {
+  flex-shrink: 0;
+  padding: 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  white-space: nowrap;
+}
+
+.headerCell:nth-child(1) { min-width: 180px; }
+.headerCell:nth-child(2) { min-width: 100px; }
+.headerCell:nth-child(3) { min-width: 90px; }
+.headerCell:nth-child(4) { min-width: 80px; }
+.headerCell:nth-child(5) { min-width: 100px; }
+.headerCell:nth-child(6) { min-width: 80px; }
+.headerCell:nth-child(7) { min-width: 90px; }
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  min-height: 3rem;
+  border-bottom: 1px solid var(--color-gray-200);
+  padding: 0.5rem 0;
+  transition: opacity 0.2s ease;
+}
+
+.past {
+  opacity: 0.5;
+  background-color: var(--color-gray-50);
+}
+
+.cell {
+  flex-shrink: 0;
+  padding: 0 0.5rem;
+  font-size: 0.875rem;
+  color: var(--color-gray-900);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cell:nth-child(1) { min-width: 180px; }
+.cell:nth-child(2) { min-width: 100px; }
+.cell:nth-child(3) { min-width: 90px; }
+.cell:nth-child(4) { min-width: 80px; }
+.cell:nth-child(5) { min-width: 100px; }
+.cell:nth-child(6) { min-width: 80px; }
+.cell:nth-child(7) { min-width: 90px; }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  padding: 1.5rem 0 3rem;
+}
+
+.arrowBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-family-condensed);
+  font-size: 1.125rem;
+  font-weight: 600;
+  padding: 0.5rem 1.5rem;
+  border: 2px solid var(--color-primary);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--color-primary);
+    color: var(--color-white);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 4rem 2rem;
+}
+
+.emptyTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-gray-400);
+}

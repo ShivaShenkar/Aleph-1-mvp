@@ -9,37 +9,49 @@
   height: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 0 2rem;
   gap: 1rem;
 }
 
-.navPill {
+.right {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+
+.logoText {
+  font-family: 'Dana Yad AlefAlefAlef', sans-serif;
+  font-size: 3rem;
+  color: var(--color-warning);
+  white-space: nowrap;
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
   gap: 1.75rem;
   background: var(--color-primary);
   border-radius: 50px;
   padding-inline: 2rem 2.5rem;
   padding-block: 0.75rem;
   margin-inline: auto;
+  min-width: 400px;
 }
 
-.logoLink {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-
-  img {
-    display: block;
-  }
-}
-
-.navItem {
+.pillItem {
   display: flex;
   align-items: center;
   color: rgba(255, 255, 255, 0.55);
   transition: color 0.15s ease;
+  text-decoration: none;
 
   &:hover {
     color: rgba(255, 255, 255, 0.85);
@@ -50,8 +62,14 @@
   }
 }
 
-.active {
+.pillActive {
   color: #fff;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 @media (max-width: 1024px) {
@@ -59,20 +77,24 @@
     height: 5rem;
   }
 
-  .navPill {
+  .inner {
+    padding: 0 1rem;
+    gap: 0.75rem;
+  }
+
+  .pill {
     gap: 1.25rem;
     padding-inline: 1.25rem 1.75rem;
     padding-block: 0.6rem;
   }
 
-  .navItem svg {
+  .pillItem svg {
     width: 24px;
     height: 24px;
   }
 
-  .logoLink img {
-    width: 26px;
-    height: 26px;
+  .logoText {
+    font-size: 1.25rem;
   }
 }
 
@@ -86,19 +108,18 @@
     gap: 0.5rem;
   }
 
-  .navPill {
+  .pill {
     gap: 0.875rem;
     padding-inline: 0.75rem 1rem;
     padding-block: 0.5rem;
   }
 
-  .navItem svg {
+  .pillItem svg {
     width: 20px;
     height: 20px;
   }
 
-  .logoLink img {
-    width: 22px;
-    height: 22px;
+  .logoText {
+    display: none;
   }
 }

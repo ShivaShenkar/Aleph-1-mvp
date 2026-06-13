@@ -1,13 +1,13 @@
 .page {
-  background: #f8f9fa;
+  background: var(--color-gray-50);
   min-height: 100vh;
-  padding: 32px;
+  padding: 2rem;
   box-sizing: border-box;
 }
 
 .container {
   display: flex;
-  gap: 32px;
+  gap: 2rem;
   max-width: 1200px;
   margin: 0 auto;
   direction: rtl;
@@ -15,6 +15,7 @@
 }
 
 .formPanel {
+  width: 500px;
   flex-shrink: 0;
 }
 
@@ -23,7 +24,11 @@
   min-width: 0;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
+  .page {
+    padding: 1rem;
+  }
+
   .container {
     flex-direction: column-reverse;
     align-items: center;
@@ -31,6 +36,6 @@
 
   .formPanel {
     width: 100%;
-    max-width: 400px;
+    max-width: 500px;
   }
 }

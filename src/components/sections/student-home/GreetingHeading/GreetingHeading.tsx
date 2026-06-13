@@ -11,7 +11,7 @@ function getGreeting(): string {
 }
 
 export default function GreetingHeading() {
-  const givenName = useAuthStore((s) => s.user?.givenName);
+  const givenName = useAuthStore((s) => s.user?.firstName);
   if (!givenName) return null;
 
   return (

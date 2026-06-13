@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 
 interface TutorSetupGuardProps {
@@ -8,8 +8,10 @@ interface TutorSetupGuardProps {
 
 export function TutorSetupGuard({ requireSetup, children }: TutorSetupGuardProps) {
   const user = useAuthStore((s) => s.user);
-  const localComplete = useAuthStore((s) => s.setupComplete);
-  const setupComplete = user?.isSetupComplete ?? localComplete;
+
+  if (!user) return <>{children}</>;
+
+  const setupComplete = user.isSetupComplete ?? false;
 
   if (requireSetup && !setupComplete) {
     return <Navigate to="/tutor/setup" replace />;
@@ -18,5 +20,5 @@ export function TutorSetupGuard({ requireSetup, children }: TutorSetupGuardProps
     return <Navigate to="/tutor" replace />;
   }
 
-  return children ? <>{children}</> : <Outlet />;
+  return children ? <>{children}</> : null;
 }

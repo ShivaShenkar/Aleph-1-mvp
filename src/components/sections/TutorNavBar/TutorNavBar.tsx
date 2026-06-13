@@ -1,43 +1,47 @@
-import { NavLink } from "react-router-dom";
-import { House, Wallet, Bell, BarChart3, MessageSquare } from "lucide-react";
+import { NavLink, Link } from "react-router-dom";
+import { House, Calendar, History, Landmark } from "lucide-react";
 import styles from "./TutorNavBar.module.scss";
 import ProfileArea from "./ProfileArea";
 
 const navItems = [
-  { to: "/tutor/payments", icon: Wallet, label: "תשלומים" },
-  { to: "/tutor/notifications", icon: Bell, label: "התראות" },
-  { to: "/tutor/analytics", icon: BarChart3, label: "סטטיסטיקות" },
-  { to: "/tutor/messages", icon: MessageSquare, label: "הודעות" },
   { to: "/tutor", icon: House, label: "בית", end: true },
+  { to: "/tutor/calendar", icon: Calendar, label: "לוח זמנים" },
+  { to: "/tutor/history", icon: History, label: "היסטוריה" },
+  { to: "/tutor/payments", icon: Landmark, label: "תשלומים" },
 ];
 
 export default function TutorNavBar() {
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
-        <ProfileArea />
-        <nav className={styles.navPill}>
-          <NavLink to="/tutor" className={styles.logoLink}>
+        <div className={styles.right}>
+          <Link to="/tutor" className={styles.logo}>
             <img
               src="/svg/Aleph1-tiny-logo.svg"
               alt="אלף1"
-              width={32}
-              height={32}
+              width={45}
+              height={43}
             />
-          </NavLink>
+            <span className={styles.logoText}>למורה</span>
+          </Link>
+        </div>
+        <nav className={styles.pill}>
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               end={item.end}
               className={({ isActive }) =>
-                `${styles.navItem} ${isActive ? styles.active : ""}`
+                `${styles.pillItem} ${isActive ? styles.pillActive : ""}`
               }
             >
               <item.icon size={28} />
             </NavLink>
           ))}
         </nav>
+        <div className={styles.left}>
+          <ProfileArea />
+        </div>
       </div>
     </header>
   );

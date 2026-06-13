@@ -1,7 +1,6 @@
 import type { Booking } from "@/models/models";
 import type { DayGroup } from "@/store/bookingStore";
 import { useBookingStore } from "@/store/bookingStore";
-import { useAuthStore } from "@/store/authStore";
 
 function groupByNearestDays(bookings: Booking[]): DayGroup[] {
   const sorted = [...bookings].sort(
@@ -26,9 +25,6 @@ function groupByNearestDays(bookings: Booking[]): DayGroup[] {
 }
 
 export async function homePageLoad() {
-  // Fetch user data
-  await useAuthStore.getState().fetchUser();
-
   // TODO: Replace with actual AWS API Gateway call
   // const response = await fetch('/api/student/slots');
   // const bookings: Booking[] = await response.json();

@@ -1,0 +1,153 @@
+.wrapper {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 56px repeat(7, 1fr);
+  grid-auto-rows: 44px;
+  direction: rtl;
+  min-width: 640px;
+  position: relative;
+}
+
+.corner {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  height: 48px;
+}
+
+.headerCell {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  border-right: 1px solid #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  height: 48px;
+}
+
+.headerDay {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #6b7280;
+}
+.slotsWrapper{
+  display: contents;
+  cursor: pointer;
+}
+
+.rowWrapper {
+  display: contents;
+}
+
+.headerDate {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.hourLabel {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 3px;
+  font-size: 0.7rem;
+  color: #9ca3af;
+  border-right: 1px solid #f3f4f6;
+}
+
+.cell {
+  border-right: 1px solid #f3f4f6;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.2s ease-in;
+
+  &:hover {
+    background-color: #dbeafe;
+  }
+}
+
+.cellPast {
+  background-color: #e5e7eb;
+  cursor: not-allowed;
+
+  &:hover {
+    background-color: #e5e7eb;
+  }
+}
+
+.blocksLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.dialog {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dialogText {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  text-align: center;
+}
+
+.dialogActions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.dialogCancel {
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.dialogConfirm {
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  border: none;
+  background: #ef4444;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+}

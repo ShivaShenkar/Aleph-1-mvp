@@ -6,3 +6,10 @@
   font-weight: normal;
   font-style: normal;
 }
+
+@font-face {
+  font-family: 'Dana Yad AlefAlefAlef';
+  src: url('/fonts/._DanaYadAlefAlefAlef-Normal.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}

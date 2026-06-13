@@ -9,10 +9,10 @@ import StudentLessonsPage from './pages/StudentLessonsPage/StudentLessonsPage';
 import TutorPage from './pages/TutorMainPage';
 import TutorDashboardPage from './pages/TutorDashboardPage';
 import TutorPaymentsPage from './pages/TutorPaymentsPage';
-import TutorNotificationsPage from './pages/TutorNotificationsPage';
-import TutorAnalyticsPage from './pages/TutorAnalyticsPage';
-import TutorMessagesPage from './pages/TutorMessagesPage';
+import TutorCalendarPage from './pages/TutorCalendarPage';
+import TutorHistoryPage from './pages/TutorHistoryPage';
 import TutorSetupPage from './pages/TutorSetupPage';
+import TutorProfilePage from './pages/TutorProfilePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import VerifyPage from './pages/VerifyPage';
@@ -60,6 +60,11 @@ export function App() {
             <StudentLessonsPage />
           </ProtectedRoute>
         } />
+        <Route path="/student/tutor-profile/:id" element={
+          <ProtectedRoute requiredRole="student">
+            <TutorProfilePage />
+          </ProtectedRoute>
+        } />
         <Route path="/tutor" element={
           <ProtectedRoute requiredRole="tutor">
             <TutorSetupGuard requireSetup>
@@ -69,9 +74,8 @@ export function App() {
         }>
           <Route index element={<TutorDashboardPage />} />
           <Route path="payments" element={<TutorPaymentsPage />} />
-          <Route path="notifications" element={<TutorNotificationsPage />} />
-          <Route path="analytics" element={<TutorAnalyticsPage />} />
-          <Route path="messages" element={<TutorMessagesPage />} />
+          <Route path="calendar" element={<TutorCalendarPage />} />
+          <Route path="history" element={<TutorHistoryPage />} />
         </Route>
         <Route path="/tutor/setup" element={
           <ProtectedRoute requiredRole="tutor">

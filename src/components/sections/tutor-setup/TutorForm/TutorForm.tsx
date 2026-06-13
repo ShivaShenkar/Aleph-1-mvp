@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
+import { Mars, Venus, LoaderCircle } from "lucide-react";
 import { subjects } from "@/lib/subjects";
 import { israeliCities } from "@/components/sections/tutor-setup/locations";
-import type { LessonTypeDraft } from "@/pages/TutorSetupPage";
+import { type LessonType } from "@/models/models";
 import styles from "./TutorForm.module.scss";
 
 interface TutorFormProps {
@@ -17,11 +18,12 @@ interface TutorFormProps {
   bio: string;
   onBioChange: (text: string) => void;
   formErrors: Record<string, string>;
-  lessonTypes: LessonTypeDraft[];
+  lessonTypes: LessonType[];
   onAddLesson: () => void;
-  onUpdateLesson: (id: string, field: keyof LessonTypeDraft, value: string | number) => void;
+  onUpdateLesson: (id: string, field: keyof LessonType, value: string | number) => void;
   onRemoveLesson: (id: string) => void;
   onSubmit: () => void;
+  submitting: boolean;
 }
 
 export default function TutorForm({
@@ -42,6 +44,7 @@ export default function TutorForm({
   onUpdateLesson,
   onRemoveLesson,
   onSubmit,
+  submitting,
 }: TutorFormProps) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [subjectDropdownOpen, setSubjectDropdownOpen] = useState(false);
@@ -76,9 +79,7 @@ export default function TutorForm({
               className={`${styles.genderCard} ${gender === "male" ? styles.genderActiveMale : ""}`}
               onClick={() => onGenderChange("male")}
             >
-              <svg width="40" height="40" viewBox="0 0 76 76" fill="none">
-                <path d="M66.5 9.5v19M57 19l9.5-9.5M47.5 47.5A19 19 0 119.5 47.5a19 19 0 0138 0z" stroke="#000" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <Mars size={40} />
               <span>זכר</span>
             </button>
             <button
@@ -86,10 +87,7 @@ export default function TutorForm({
               className={`${styles.genderCard} ${gender === "female" ? styles.genderActiveFemale : ""}`}
               onClick={() => onGenderChange("female")}
             >
-              <svg width="40" height="40" viewBox="0 0 87 87" fill="none">
-                <circle cx="43.5" cy="23.5" r="14" stroke="#000" strokeWidth="4.5"/>
-                <path d="M43.5 37.5v38M28.5 60.5h30" stroke="#000" strokeWidth="4.5" strokeLinecap="round"/>
-              </svg>
+              <Venus size={40} />
               <span>נקבה</span>
             </button>
           </div>
@@ -98,7 +96,7 @@ export default function TutorForm({
 
         {/* Profile Pic */}
         <div className={styles.field}>
-          <label className={styles.label}>תמונת פרופיל</label>
+          <label className={styles.label}>תמונת פרופיל*</label>
           <button
             type="button"
             className={styles.uploadBox}
@@ -117,7 +115,7 @@ export default function TutorForm({
           <input
             ref={fileRef}
             type="file"
-            accept="image/*"
+            accept=".jpg,.jpeg"
             onChange={handleFile}
             className={styles.hiddenInput}
           />
@@ -126,7 +124,7 @@ export default function TutorForm({
 
         {/* Location */}
         <div className={styles.field}>
-          <label className={styles.label}>מיקום</label>
+          <label className={styles.label}>מיקום*</label>
           <div className={styles.selectWrapper}>
             <select
               className={styles.select}
@@ -147,7 +145,7 @@ export default function TutorForm({
 
         {/* Subjects */}
         <div className={styles.field}>
-          <label className={styles.label}>מקצועות לימוד</label>
+          <label className={styles.label}>מקצועות לימוד*</label>
           <div className={styles.selectWrapper}>
             <button
               type="button"
@@ -239,11 +237,11 @@ export default function TutorForm({
               </button>
             )}
             {lessonTypes.map((lt) => (
-              <div key={lt.id} className={styles.lessonCard}>
+              <div key={lt.LessonId} className={styles.lessonCard}>
                 <button
                   type="button"
                   className={styles.lessonRemove}
-                  onClick={() => onRemoveLesson(lt.id)}
+                  onClick={() => onRemoveLesson(lt.LessonId)}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f8f9fa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18" />
@@ -255,7 +253,7 @@ export default function TutorForm({
                     className={styles.lessonInput}
                     placeholder="שם השיעור"
                     value={lt.title}
-                    onChange={(e) => onUpdateLesson(lt.id, "title", e.target.value)}
+                    onChange={(e) => onUpdateLesson(lt.LessonId, "title", e.target.value)}
                   />
                 </div>
                 <div className={styles.lessonRow}>
@@ -266,7 +264,7 @@ export default function TutorForm({
                     max={10}
                     className={styles.lessonInputSmall}
                     value={lt.maxStudents || ""}
-                    onChange={(e) => onUpdateLesson(lt.id, "maxStudents", Number(e.target.value))}
+                    onChange={(e) => onUpdateLesson(lt.LessonId, "maxStudents", Number(e.target.value))}
                   />
                 </div>
                 <div className={styles.lessonRow}>
@@ -274,7 +272,7 @@ export default function TutorForm({
                   <select
                     className={styles.lessonSelect}
                     value={lt.durationMinutes}
-                    onChange={(e) => onUpdateLesson(lt.id, "durationMinutes", Number(e.target.value))}
+                    onChange={(e) => onUpdateLesson(lt.LessonId, "durationMinutes", Number(e.target.value))}
                   >
                     {(() => {
                       const options: number[] = [];
@@ -296,7 +294,7 @@ export default function TutorForm({
                     min={0}
                     className={styles.lessonInputSmall}
                     value={lt.price || ""}
-                    onChange={(e) => onUpdateLesson(lt.id, "price", Number(e.target.value))}
+                    onChange={(e) => onUpdateLesson(lt.LessonId, "price", Number(e.target.value))}
                   />
                   <span className={styles.lessonUnit}>₪</span>
                 </div>
@@ -306,14 +304,14 @@ export default function TutorForm({
                     <button
                       type="button"
                       className={`${styles.locationBtn} ${lt.location === "online" ? styles.locationActive : ""}`}
-                      onClick={() => onUpdateLesson(lt.id, "location", "online")}
+                      onClick={() => onUpdateLesson(lt.LessonId, "location", "online")}
                     >
                       אונליין
                     </button>
                     <button
                       type="button"
                       className={`${styles.locationBtn} ${lt.location === "in-person" ? styles.locationActive : ""}`}
-                      onClick={() => onUpdateLesson(lt.id, "location", "in-person")}
+                      onClick={() => onUpdateLesson(lt.LessonId, "location", "in-person")}
                     >
                       פרונטלי
                     </button>
@@ -326,8 +324,8 @@ export default function TutorForm({
         </div>
 
         {/* Submit */}
-        <button type="button" className={styles.submitBtn} onClick={onSubmit}>
-          אישור
+        <button type="button" className={styles.submitBtn} onClick={onSubmit} disabled={submitting}>
+          {submitting ? <LoaderCircle size={24} className={styles.spinner} /> : "אישור"}
         </button>
       </div>
     </div>

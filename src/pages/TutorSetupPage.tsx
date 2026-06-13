@@ -5,20 +5,11 @@ import TutorForm from "@/components/sections/tutor-setup/TutorForm/TutorForm";
 import TutorPreview from "@/components/sections/tutor-setup/TutorPreview/TutorPreview";
 import styles from "./TutorSetupPage.module.scss";
 import { fetchAuthSession } from "aws-amplify/auth";
-// import { uploadData } from "aws-amplify/storage";
-
-export interface LessonTypeDraft {
-  id: string;
-  title: string;
-  maxStudents: number;
-  durationMinutes: number;
-  price: number;
-  location: "online" | "in-person";
-}
+import { type LessonType } from "@/models/models";
 
 export default function TutorSetupPage() {
   const navigate = useNavigate();
-  const markSetupComplete = useAuthStore((s) => s.markSetupComplete);
+  const currentUser = useAuthStore((s) => s.user);
 
   const [gender, setGender] = useState<"male" | "female" | null>(null);
   const [profilePic, setProfilePic] = useState<File | null>(null);
@@ -26,9 +17,9 @@ export default function TutorSetupPage() {
   const [location, setLocation] = useState("");
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [bio, setBio] = useState("");
-  const [lessonTypes, setLessonTypes] = useState<LessonTypeDraft[]>([]);
+  const [lessonTypes, setLessonTypes] = useState<LessonType[]>([]);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-
+  const [submitting, setSubmitting] = useState(false);
   const handleProfilePic = useCallback((file: File) => {
     setProfilePic(file);
     const reader = new FileReader();
@@ -40,7 +31,7 @@ export default function TutorSetupPage() {
 
   const handleAddSubject = useCallback((slug: string) => {
     setSelectedSubjects((prev) => {
-      if (prev.includes(slug)) return prev;
+      if (prev.includes(slug) || prev.length >= 4) return prev;
       return [...prev, slug];
     });
   }, []);
@@ -50,10 +41,12 @@ export default function TutorSetupPage() {
   }, []);
 
   const handleAddLesson = useCallback(() => {
+
     setLessonTypes((prev) => {
       if (prev.length >= 4) return prev;
-      const newLesson: LessonTypeDraft = {
-        id: crypto.randomUUID(),
+      const newLesson: LessonType = {
+        LessonId: crypto.randomUUID(),
+        tutorId: String(currentUser?.userId),
         title: "",
         maxStudents: 1,
         durationMinutes: 60,
@@ -62,13 +55,13 @@ export default function TutorSetupPage() {
       };
       return [...prev, newLesson];
     });
-  }, []);
+  }, [currentUser]);
 
   const handleUpdateLesson = useCallback(
-    (id: string, field: keyof LessonTypeDraft, value: string | number) => {
+    (id: string, field: keyof LessonType, value: string | number) => {
       setLessonTypes((prev) =>
         prev.map((lt) => {
-          if (lt.id !== id) return lt;
+          if (lt.LessonId !== id) return lt;
           const clamped = field === "maxStudents"
             ? Math.min(Math.max(1, value as number), 10)
             : value;
@@ -80,7 +73,7 @@ export default function TutorSetupPage() {
   );
 
   const handleRemoveLesson = useCallback((id: string) => {
-    setLessonTypes((prev) => prev.filter((lt) => lt.id !== id));
+    setLessonTypes((prev) => prev.filter((lt) => lt.LessonId !== id));
   }, []);
 
   const handleSubmit = useCallback(async () => {
@@ -100,15 +93,19 @@ export default function TutorSetupPage() {
       return Object.keys(errs).length === 0;
     }
 
-    if (!validate()) return;
+    setSubmitting(true);
+    if (!validate()||!profilePic) return setSubmitting(false);
+
+    const session = await fetchAuthSession();
+    const sub = session.tokens?.idToken?.payload?.sub;
+    const profilePicPath = sub ? `/profiles/${sub}.jpg` : "";
 
     async function uploadToCloud(): Promise<boolean> {
-      try {
-        const session = await fetchAuthSession();
+      try { 
+        
         const token = session.tokens?.idToken;
-        const sub = session.tokens?.idToken?.payload?.sub;
+        
         if (!token || !sub||!profilePic) return false;
-        const path = `profiles/${sub}.jpg`;
 
         const photoResponse = await fetch(`${import.meta.env.VITE_API_GATEWAY_URL}/upload-tutor-photo`,
         {
@@ -117,17 +114,18 @@ export default function TutorSetupPage() {
           Authorization: `Bearer ${token}`,
           "Content-Type": profilePic.type
           },  
-          body:profilePic
+          body: profilePic
         });
         if(!photoResponse.ok)
           return false;
-
+        
         const payload = {
           gender,
           location,
           subjects: selectedSubjects,
           bio,
-          lessonTypes
+          lessonTypes,
+          profilePicPath
         };
 
         const response = await fetch(
@@ -150,15 +148,25 @@ export default function TutorSetupPage() {
       }
     }
 
+    setSubmitting(false);
     const success = await uploadToCloud();
     if (success) {
       setFormErrors({});
-      markSetupComplete();
+      
+
+      useAuthStore.getState().updateUserSetupData({
+        isSetupComplete: true,
+        profilePic: profilePicPath,
+        location,
+        gender: gender!,
+        subjects: selectedSubjects,
+        bio,
+      });
       navigate("/tutor");
     } else {
       alert("העלאה נכשלה, אנא נסה שנית");
     }
-  }, [gender, location, selectedSubjects, bio, lessonTypes, profilePic, markSetupComplete, navigate]);
+  }, [gender, location, selectedSubjects, bio, lessonTypes, profilePic, navigate]);
 
   return (
     <div className={styles.page}>
@@ -181,6 +189,7 @@ export default function TutorSetupPage() {
             onAddLesson={handleAddLesson}
             onUpdateLesson={handleUpdateLesson}
             onRemoveLesson={handleRemoveLesson}
+            submitting={submitting}
             onSubmit={handleSubmit}
           />
         </div>
