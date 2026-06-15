@@ -1,10 +1,12 @@
 import { useState, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { fetchAuthSession } from "aws-amplify/auth";
 import { LoaderCircle } from "lucide-react";
 import type { LessonType } from "@/models/models";
 import type { CalendarBlock } from "@/types/calendar";
 import { useAuthStore } from "@/store/authStore";
 import { useBookingStore } from "@/store/bookingStore";
+import { usePaymentDetailsStore } from "@/store/paymentDetailsStore";
 import WeekGrid from "@/components/sections/tutor-calendar/WeekGrid/WeekGrid";
 import styles from "./TutorCalendarPage.module.scss";
 
@@ -30,6 +32,7 @@ function formatWeekRange(start: Date): string {
 }
 
 export default function TutorCalendarPage() {
+  const navigate = useNavigate();
   const todaySunday = getSunday(new Date());
   const [weekStart, setWeekStart] = useState<Date>(todaySunday);
   const user = useAuthStore((s) => s.user);
@@ -37,10 +40,12 @@ export default function TutorCalendarPage() {
   const subjects = user?.subjects ?? [];
 
   const { tutorSlots, tutorSlotsLoaded, fetchTutorSlots, applyTutorSlotChanges } = useBookingStore();
+  const { accounts: bankAccounts, loading: bankLoading, fetchAccounts: fetchBankAccounts } = usePaymentDetailsStore();
 
   useEffect(() => {
     if (!tutorSlotsLoaded) fetchTutorSlots();
-  }, [tutorSlotsLoaded, fetchTutorSlots]);
+    fetchBankAccounts();
+  }, [tutorSlotsLoaded, fetchTutorSlots, fetchBankAccounts]);
 
   const weekKey = toISODate(weekStart);
 
@@ -54,12 +59,18 @@ export default function TutorCalendarPage() {
   const [submitting, setSubmitting] = useState(false);
 
   const blocks = useMemo(() => {
-    const saved = tutorSlots
-      .filter((s) => s.weekStart === weekKey)
-      .filter((s) => !unsaved.deletedIds.includes(s.id))
-      .map((s) => ({ ...s, source: "saved" as const }));
-    const added = unsaved.added.filter((b) => b.weekStart === weekKey);
-    return [...saved, ...added];
+    const dedup = new Map<string, CalendarBlock>();
+    for (const s of tutorSlots) {
+      if (s.weekStart === weekKey && !unsaved.deletedIds.includes(s.id) && !dedup.has(s.id)) {
+        dedup.set(s.id, { ...s, source: "saved" as const });
+      }
+    }
+    for (const b of unsaved.added) {
+      if (b.weekStart === weekKey && !dedup.has(b.id)) {
+        dedup.set(b.id, b);
+      }
+    }
+    return Array.from(dedup.values());
   }, [tutorSlots, weekKey, unsaved.added, unsaved.deletedIds]);
 
   const hasChanges = unsaved.added.length > 0 || unsaved.deletedIds.length > 0;
@@ -95,6 +106,8 @@ export default function TutorCalendarPage() {
       durationMinutes: lt.durationMinutes,
       location: lt.location,
       subject: null,
+      maxStudents: lt.maxStudents,
+      registeredCount: 0,
     };
     setUnsaved((prev) => ({ ...prev, added: [...prev.added, block] }));
   }
@@ -124,6 +137,11 @@ export default function TutorCalendarPage() {
 
   async function handleSave() {
     if (!hasChanges) return;
+
+    if (bankAccounts.length === 0) {
+      setSubmitError("יש להוסיף חשבון בנק לפני פרסום שיעורים");
+      return;
+    }
 
     const noSubject = unsaved.added.filter((b) => !b.subject);
     if (noSubject.length > 0) {
@@ -168,6 +186,30 @@ export default function TutorCalendarPage() {
     }
   }
 
+  if (bankLoading || !tutorSlotsLoaded) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.centerState}>
+          <LoaderCircle className={styles.spinner} size={32} />
+        </div>
+      </div>
+    );
+  }
+
+  if (!bankLoading && bankAccounts.length === 0) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.noBank}>
+          <h2>לא ניתן לקבוע שיעורים</h2>
+          <p>על מנת לקבוע שיעורים יש להוסיף חשבון בנק לפרטי התשלום שלך</p>
+          <button className={styles.linkBtn} onClick={() => navigate("/tutor/payments")}>
+            מעבר לפרטי תשלום
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.page}>
       <h1 className={styles.heading}>לו"ז עבודה</h1>
@@ -200,6 +242,10 @@ export default function TutorCalendarPage() {
         onAddBlock={handleAddBlock}
         onUpdateBlock={handleUpdateBlock}
         onDeleteBlock={handleDeleteBlock}
+        canDeleteBlock={(blockId) => {
+          const block = blocks.find((b) => b.id === blockId);
+          return block ? block.registeredCount === 0 : true;
+        }}
       />
 
       {hasChanges && (
@@ -212,7 +258,14 @@ export default function TutorCalendarPage() {
                 : ""}
             </span>
             {submitError && (
-              <span className={styles.submitError}>{submitError}</span>
+              <span className={styles.submitError}>
+                {submitError}
+                {submitError.includes("חשבון בנק") && (
+                  <button className={styles.linkBtnInline} onClick={() => navigate("/tutor/payments")}>
+                    מעבר לפרטי תשלום
+                  </button>
+                )}
+              </span>
             )}
           </div>
           <div className={styles.submitActions}>

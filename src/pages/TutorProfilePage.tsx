@@ -165,7 +165,7 @@ export default function TutorProfilePage() {
             </h2>
             <div className={styles.lessonGrid}>
               {tutor.lessonTypes.map((lt) => (
-                <div key={lt.LessonId} className={styles.lessonCard}>
+                <div key={lt.LessonId} className={styles.lessonCard} onClick={() => navigate(`/student/book/${id}`)}>
                   <div className={styles.lessonPrice}>₪{lt.price}</div>
                   <div className={styles.lessonDetails}>
                     <span className={styles.lessonName}>{lt.title}</span>

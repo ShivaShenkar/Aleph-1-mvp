@@ -1,5 +1,5 @@
 import { NavLink, Link } from "react-router-dom";
-import { House, Calendar, History, Landmark } from "lucide-react";
+import { House, Calendar, History, Landmark, User } from "lucide-react";
 import styles from "./TutorNavBar.module.scss";
 import ProfileArea from "./ProfileArea";
 
@@ -8,6 +8,7 @@ const navItems = [
   { to: "/tutor/calendar", icon: Calendar, label: "לוח זמנים" },
   { to: "/tutor/history", icon: History, label: "היסטוריה" },
   { to: "/tutor/payments", icon: Landmark, label: "תשלומים" },
+  { to: "/tutor/profile", icon: User, label: "פרופיל" },
 ];
 
 export default function TutorNavBar() {

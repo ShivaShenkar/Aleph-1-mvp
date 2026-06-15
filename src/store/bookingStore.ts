@@ -86,9 +86,12 @@ export const useBookingStore = create<BookingStore>((set, get) => ({
         set({ tutorSlotsLoading: false, tutorSlotsLoaded: true });
         return;
       }
-      const raw: SavedSlot[] = await response.json();
-      set({ tutorSlots: raw, tutorSlotsLoading: false, tutorSlotsLoaded: true });
-      saveCachedData(raw);
+      const raw = await response.json();
+      const mapped: SavedSlot[] = raw.map(
+        ({ BookingId: id, TutorId: _t, createdAt: _c, ...rest }: Record<string, unknown>) => ({ id, ...rest } as SavedSlot),
+      );
+      set({ tutorSlots: mapped, tutorSlotsLoading: false, tutorSlotsLoaded: true });
+      saveCachedData(mapped);
     } catch {
       set({ tutorSlotsLoading: false, tutorSlotsLoaded: true });
     }

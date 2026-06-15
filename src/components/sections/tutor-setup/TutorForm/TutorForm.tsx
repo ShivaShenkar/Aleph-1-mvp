@@ -6,6 +6,9 @@ import { type LessonType } from "@/models/models";
 import styles from "./TutorForm.module.scss";
 
 interface TutorFormProps {
+  title?: string;
+  showGender?: boolean;
+  profilePicRequired?: boolean;
   gender: "male" | "female" | null;
   onGenderChange: (g: "male" | "female") => void;
   profilePicPreview: string | null;
@@ -27,6 +30,9 @@ interface TutorFormProps {
 }
 
 export default function TutorForm({
+  title = "השלמת פרטי פרופיל",
+  showGender = true,
+  profilePicRequired = true,
   gender,
   onGenderChange,
   profilePicPreview,
@@ -67,36 +73,38 @@ export default function TutorForm({
 
   return (
     <div className={styles.form}>
-      <h1 className={styles.title}>השלמת פרטי פרופיל</h1>
+      <h1 className={styles.title}>{title}</h1>
 
       <div className={styles.fields}>
         {/* Gender */}
-        <div className={styles.field}>
-          <label className={styles.label}>מין *</label>
-          <div className={styles.genderRow}>
-            <button
-              type="button"
-              className={`${styles.genderCard} ${gender === "male" ? styles.genderActiveMale : ""}`}
-              onClick={() => onGenderChange("male")}
-            >
-              <Mars size={40} />
-              <span>זכר</span>
-            </button>
-            <button
-              type="button"
-              className={`${styles.genderCard} ${gender === "female" ? styles.genderActiveFemale : ""}`}
-              onClick={() => onGenderChange("female")}
-            >
-              <Venus size={40} />
-              <span>נקבה</span>
-            </button>
+        {showGender && (
+          <div className={styles.field}>
+            <label className={styles.label}>מין *</label>
+            <div className={styles.genderRow}>
+              <button
+                type="button"
+                className={`${styles.genderCard} ${gender === "male" ? styles.genderActiveMale : ""}`}
+                onClick={() => onGenderChange("male")}
+              >
+                <Mars size={40} />
+                <span>זכר</span>
+              </button>
+              <button
+                type="button"
+                className={`${styles.genderCard} ${gender === "female" ? styles.genderActiveFemale : ""}`}
+                onClick={() => onGenderChange("female")}
+              >
+                <Venus size={40} />
+                <span>נקבה</span>
+              </button>
+            </div>
+            {formErrors.gender && <span className={styles.fieldError}>{formErrors.gender}</span>}
           </div>
-          {formErrors.gender && <span className={styles.fieldError}>{formErrors.gender}</span>}
-        </div>
+        )}
 
         {/* Profile Pic */}
         <div className={styles.field}>
-          <label className={styles.label}>תמונת פרופיל*</label>
+          <label className={styles.label}>תמונת פרופיל{profilePicRequired ? '*' : ''}</label>
           <button
             type="button"
             className={styles.uploadBox}

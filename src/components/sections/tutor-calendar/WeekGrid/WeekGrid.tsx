@@ -18,9 +18,13 @@ interface WeekGridProps {
   lessonTypes: LessonType[];
   subjects: string[];
   blocks: CalendarBlock[];
+  readOnly?: boolean;
+  selectedBlockIds?: string[];
+  onSelectBlock?: (blockId: string) => void;
   onAddBlock: (lt: LessonType, day: number, startHour: number) => void;
   onUpdateBlock: (blockId: string, updates: Partial<CalendarBlock>) => void;
   onDeleteBlock: (blockId: string, source: "saved" | "new") => void;
+  canDeleteBlock?: (blockId: string) => boolean;
 }
 
 function buildSlots(): { label: string; index: number }[] {
@@ -52,9 +56,13 @@ export default function WeekGrid({
   lessonTypes,
   subjects,
   blocks,
+  readOnly,
+  selectedBlockIds,
+  onSelectBlock,
   onAddBlock,
   onUpdateBlock,
   onDeleteBlock,
+  canDeleteBlock,
 }: WeekGridProps) {
   const [tooltipData, setTooltipData] = useState<{
     style: CSSProperties;
@@ -69,6 +77,7 @@ export default function WeekGrid({
     blockId: string;
     source: "saved" | "new";
   } | null>(null);
+  const [deleteBlockedBlockId, setDeleteBlockedBlockId] = useState<string | null>(null);
 
   useEffect(() => {
     setTooltipData(null);
@@ -95,6 +104,7 @@ export default function WeekGrid({
   }
 
   function handleGridClick(e: React.MouseEvent<HTMLDivElement>) {
+    if (readOnly) return;
     const target = e.target as HTMLElement;
     const dayStr = target.dataset.day;
     const hourStr = target.dataset.hour;
@@ -139,6 +149,8 @@ export default function WeekGrid({
           durationMinutes: lt.durationMinutes,
           location: lt.location,
           subject: null,
+          maxStudents: lt.maxStudents,
+          registeredCount: 0,
         };
         setOverlapBlocks([tempBlock]);
         setTooltipData(null);
@@ -153,6 +165,10 @@ export default function WeekGrid({
   );
 
   function handleRequestDelete(blockId: string, source: "saved" | "new") {
+    if (canDeleteBlock && !canDeleteBlock(blockId)) {
+      setDeleteBlockedBlockId(blockId);
+      return;
+    }
     setDeleteTarget({ blockId, source });
   }
 
@@ -210,6 +226,9 @@ export default function WeekGrid({
               block={block}
               style={getBlockStyle(block)}
               fading={fadingBlockIds.includes(block.id)}
+              readOnly={readOnly}
+              selected={selectedBlockIds?.includes(block.id) ?? false}
+              onSelect={onSelectBlock}
               onSubjectClick={handleSubjectClick}
               onBlockClick={handleRequestDelete}
             />
@@ -227,7 +246,7 @@ export default function WeekGrid({
         </div>
 
         {/* Lesson type tooltip */}
-        {tooltipData && (
+        {!readOnly && tooltipData && (
           <LessonTypeTooltip
             style={tooltipData.style}
             lessonTypes={lessonTypes}
@@ -238,7 +257,7 @@ export default function WeekGrid({
         )}
 
         {/* Subject tooltip */}
-        {subjectPopupForBlock && (
+        {!readOnly && subjectPopupForBlock && (
           <SubjectTooltip
             tutorSubjects={subjects}
             onSelect={(subject) => {
@@ -250,7 +269,7 @@ export default function WeekGrid({
         )}
 
         {/* Delete confirmation */}
-        {deleteTarget && (
+        {!readOnly && deleteTarget && (
           <div
             className={styles.overlay}
             onClick={() => setDeleteTarget(null)}
@@ -272,6 +291,28 @@ export default function WeekGrid({
                   onClick={handleConfirmDelete}
                 >
                   כן, מחק
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!readOnly && deleteBlockedBlockId && (
+          <div
+            className={styles.overlay}
+            onClick={() => setDeleteBlockedBlockId(null)}
+          >
+            <div
+              className={styles.dialog}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <p className={styles.dialogText}>לא ניתן למחוק שיעור עם תלמידים רשומים</p>
+              <div className={styles.dialogActions}>
+                <button
+                  className={styles.dialogCancel}
+                  onClick={() => setDeleteBlockedBlockId(null)}
+                >
+                  אישור
                 </button>
               </div>
             </div>

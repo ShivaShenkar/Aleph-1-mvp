@@ -6,12 +6,14 @@ import StudentPage from './pages/StudentMainPage';
 import StudentSearchPage from './pages/StudentSearchPage/StudentSearchPage';
 import StudentSubjectPage from './pages/StudentSubjectPage';
 import StudentLessonsPage from './pages/StudentLessonsPage/StudentLessonsPage';
+import StudentBookPage from './pages/StudentBookPage';
 import TutorPage from './pages/TutorMainPage';
 import TutorDashboardPage from './pages/TutorDashboardPage';
 import TutorPaymentsPage from './pages/TutorPaymentsPage';
 import TutorCalendarPage from './pages/TutorCalendarPage';
 import TutorHistoryPage from './pages/TutorHistoryPage';
 import TutorSetupPage from './pages/TutorSetupPage';
+import TutorProfileEditPage from './pages/TutorProfileEditPage';
 import TutorProfilePage from './pages/TutorProfilePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
@@ -65,6 +67,11 @@ export function App() {
             <TutorProfilePage />
           </ProtectedRoute>
         } />
+        <Route path="/student/book/:tutorId" element={
+          <ProtectedRoute requiredRole="student">
+            <StudentBookPage />
+          </ProtectedRoute>
+        } />
         <Route path="/tutor" element={
           <ProtectedRoute requiredRole="tutor">
             <TutorSetupGuard requireSetup>
@@ -76,6 +83,7 @@ export function App() {
           <Route path="payments" element={<TutorPaymentsPage />} />
           <Route path="calendar" element={<TutorCalendarPage />} />
           <Route path="history" element={<TutorHistoryPage />} />
+          <Route path="profile" element={<TutorProfileEditPage />} />
         </Route>
         <Route path="/tutor/setup" element={
           <ProtectedRoute requiredRole="tutor">

@@ -10,6 +10,8 @@ export interface CalendarBlock {
   durationMinutes: number;
   location: "online" | "in-person";
   subject: string | null;
+  maxStudents: number;
+  registeredCount: number;
 }
 
 export interface SavedSlot {
@@ -23,4 +25,6 @@ export interface SavedSlot {
   durationMinutes: number;
   location: "online" | "in-person";
   subject: string | null;
+  maxStudents: number;
+  registeredCount: number;
 }

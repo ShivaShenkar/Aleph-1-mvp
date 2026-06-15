@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type { BankAccount } from "@/types/payment";
+import type { SavedSlot } from "@/types/calendar";
 import { usePaymentDetailsStore } from "@/store/paymentDetailsStore";
+import { useBookingStore } from "@/store/bookingStore";
 import styles from "./TutorPaymentsPage.module.scss";
 
 interface DraftForm {
@@ -56,12 +59,15 @@ function validate(draft: DraftForm): Partial<Record<keyof DraftForm, string>> {
 }
 
 export default function TutorPaymentsPage() {
-  const { accounts, fetchAccounts, addAccount, updateAccount, removeAccount } =
+  const navigate = useNavigate();
+  const { accounts, fetchAccounts, addAccount, updateAccount, removeAccount, syncing, syncError, clearSyncError } =
     usePaymentDetailsStore();
+  const tutorSlots = useBookingStore((s) => s.tutorSlots);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<DraftForm>(emptyDraft());
   const [errors, setErrors] = useState<Partial<Record<keyof DraftForm, string>>>({});
   const [showDeleteDialog, setShowDeleteDialog] = useState<string | null>(null);
+  const [showBlockDialog, setShowBlockDialog] = useState(false);
 
   useEffect(() => {
     fetchAccounts();
@@ -90,7 +96,7 @@ export default function TutorPaymentsPage() {
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
   }
 
-  function handleSave() {
+  async function handleSave() {
     const errs = validate(draft);
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
@@ -105,16 +111,30 @@ export default function TutorPaymentsPage() {
     };
 
     if (editingId === NEW_ID) {
-      addAccount(data);
+      await addAccount(data);
     } else if (editingId) {
-      updateAccount(editingId, data);
+      await updateAccount(editingId, data);
     }
 
     cancelEdit();
   }
 
-  function confirmDelete(id: string) {
-    removeAccount(id);
+  function slotIsFuture(slot: SavedSlot): boolean {
+    const [y, m, d] = slot.weekStart.split("-").map(Number);
+    const date = new Date(y, m - 1, d + slot.day - 1);
+    const hours = Math.floor(slot.startHour / 2);
+    const mins = (slot.startHour % 2) * 30;
+    date.setHours(hours, mins, 0, 0);
+    return date.getTime() >= Date.now();
+  }
+
+  async function confirmDelete(id: string) {
+    if (accounts.length === 1 && tutorSlots.some(slotIsFuture)) {
+      setShowDeleteDialog(null);
+      setShowBlockDialog(true);
+      return;
+    }
+    await removeAccount(id);
     setShowDeleteDialog(null);
   }
 
@@ -127,6 +147,17 @@ export default function TutorPaymentsPage() {
       <p className={styles.subtitle}>
         כאן תוכל לנהל את חשבונות הבנק שלך לקבלת תשלומים
       </p>
+
+      {syncing && <span className={styles.syncStatus}>שומר...</span>}
+      {syncError && (
+        <div className={styles.syncErrorBanner}>
+          <span>{syncError}</span>
+          <div className={styles.syncErrorActions}>
+            <button className={styles.syncErrorBtn} onClick={clearSyncError}>אישור</button>
+            <button className={styles.syncErrorBtn} onClick={() => usePaymentDetailsStore.getState().syncToBackend()}>נסה שוב</button>
+          </div>
+        </div>
+      )}
 
       {accounts.length === 0 && !isEditing ? (
         <div className={styles.card} style={{ textAlign: "center", padding: "2rem" }}>
@@ -149,12 +180,14 @@ export default function TutorPaymentsPage() {
                       <button
                         className={styles.editBtn}
                         onClick={() => beginEdit(account)}
+                        disabled={syncing}
                       >
                         ערוך
                       </button>
                       <button
                         className={styles.deleteBtn}
                         onClick={() => setShowDeleteDialog(account.id)}
+                        disabled={syncing}
                       >
                         מחק
                       </button>
@@ -232,10 +265,10 @@ export default function TutorPaymentsPage() {
                     </div>
 
                     <div className={styles.formActions}>
-                      <button className={styles.cancelBtn} onClick={cancelEdit}>
+                      <button className={styles.cancelBtn} onClick={cancelEdit} disabled={syncing}>
                         ביטול
                       </button>
-                      <button className={styles.saveBtn} onClick={handleSave}>
+                      <button className={styles.saveBtn} onClick={handleSave} disabled={syncing}>
                         {isNew ? "הוסף חשבון" : "שמור שינויים"}
                       </button>
                     </div>
@@ -331,10 +364,10 @@ export default function TutorPaymentsPage() {
                 </div>
 
                 <div className={styles.formActions}>
-                  <button className={styles.cancelBtn} onClick={cancelEdit}>
+                  <button className={styles.cancelBtn} onClick={cancelEdit} disabled={syncing}>
                     ביטול
                   </button>
-                  <button className={styles.saveBtn} onClick={handleSave}>
+                  <button className={styles.saveBtn} onClick={handleSave} disabled={syncing}>
                     הוסף חשבון
                   </button>
                 </div>
@@ -346,9 +379,28 @@ export default function TutorPaymentsPage() {
 
       {!isEditing && accounts.length < 3 && (
         <div className={styles.addArea}>
-          <button className={styles.addBtn} onClick={beginAdd}>
+          <button className={styles.addBtn} onClick={beginAdd} disabled={syncing}>
             הוסף חשבון בנק
           </button>
+        </div>
+      )}
+
+      {showBlockDialog && (
+        <div className={styles.overlay} onClick={() => setShowBlockDialog(false)}>
+          <div className={styles.dialog} onClick={(e) => e.stopPropagation()}>
+            <p className={styles.dialogText}>לא ניתן למחוק חשבון בנק</p>
+            <p className={styles.dialogBody}>
+              יש לך שיעורים עתידיים בלוח הזמנים. על מנת למחוק חשבון בנק, מחק תחילה את השיעורים העתידיים.
+            </p>
+            <div className={styles.dialogActions}>
+              <button className={styles.dialogCancel} onClick={() => setShowBlockDialog(false)}>
+                ביטול
+              </button>
+              <button className={styles.blockLinkBtn} onClick={() => navigate("/tutor/calendar")}>
+                מעבר ליומן
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -357,10 +409,10 @@ export default function TutorPaymentsPage() {
           <div className={styles.dialog} onClick={(e) => e.stopPropagation()}>
             <p className={styles.dialogText}>האם למחוק חשבון בנק זה?</p>
             <div className={styles.dialogActions}>
-              <button className={styles.dialogCancel} onClick={() => setShowDeleteDialog(null)}>
+              <button className={styles.dialogCancel} onClick={() => setShowDeleteDialog(null)} disabled={syncing}>
                 ביטול
               </button>
-              <button className={styles.dialogConfirm} onClick={() => confirmDelete(showDeleteDialog)}>
+              <button className={styles.dialogConfirm} onClick={() => confirmDelete(showDeleteDialog)} disabled={syncing}>
                 מחק
               </button>
             </div>

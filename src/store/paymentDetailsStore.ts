@@ -26,11 +26,14 @@ interface PaymentDetailsState {
   accounts: BankAccount[];
   loading: boolean;
   error: string | null;
+  syncing: boolean;
+  syncError: string | null;
   fetchAccounts: () => Promise<void>;
-  addAccount: (account: Omit<BankAccount, "id">) => string | null;
-  updateAccount: (id: string, data: Partial<BankAccount>) => void;
-  removeAccount: (id: string) => void;
+  addAccount: (account: Omit<BankAccount, "id">) => Promise<string | null>;
+  updateAccount: (id: string, data: Partial<BankAccount>) => Promise<void>;
+  removeAccount: (id: string) => Promise<void>;
   syncToBackend: () => Promise<boolean>;
+  clearSyncError: () => void;
 }
 
 const initialAccounts = loadAccounts();
@@ -39,6 +42,8 @@ export const usePaymentDetailsStore = create<PaymentDetailsState>((set, get) => 
   accounts: initialAccounts,
   loading: false,
   error: null,
+  syncing: false,
+  syncError: null,
 
   fetchAccounts: async () => {
     set({ loading: true, error: null });
@@ -71,7 +76,7 @@ export const usePaymentDetailsStore = create<PaymentDetailsState>((set, get) => 
     }
   },
 
-  addAccount: (account) => {
+  addAccount: async (account) => {
     const { accounts } = get();
     if (accounts.length >= 3) return null;
     const newAccount: BankAccount = {
@@ -80,23 +85,34 @@ export const usePaymentDetailsStore = create<PaymentDetailsState>((set, get) => 
     };
     const updated = [...accounts, newAccount];
     saveAccounts(updated);
-    set({ accounts: updated });
+    set({ accounts: updated, syncing: true, syncError: null });
+    const ok = await get().syncToBackend();
+    set({ syncing: false });
+    if (!ok) set({ syncError: "שגיאה בשמירת פרטי התשלום" });
     return newAccount.id;
   },
 
-  updateAccount: (id, data) => {
+  updateAccount: async (id, data) => {
     const updated = get().accounts.map((a) =>
       a.id === id ? { ...a, ...data } : a,
     );
     saveAccounts(updated);
-    set({ accounts: updated });
+    set({ accounts: updated, syncing: true, syncError: null });
+    const ok = await get().syncToBackend();
+    set({ syncing: false });
+    if (!ok) set({ syncError: "שגיאה בשמירת פרטי התשלום" });
   },
 
-  removeAccount: (id) => {
+  removeAccount: async (id) => {
     const updated = get().accounts.filter((a) => a.id !== id);
     saveAccounts(updated);
-    set({ accounts: updated });
+    set({ accounts: updated, syncing: true, syncError: null });
+    const ok = await get().syncToBackend();
+    set({ syncing: false });
+    if (!ok) set({ syncError: "שגיאה בשמירת פרטי התשלום" });
   },
+
+  clearSyncError: () => set({ syncError: null }),
 
   syncToBackend: async () => {
     const { accounts } = get();

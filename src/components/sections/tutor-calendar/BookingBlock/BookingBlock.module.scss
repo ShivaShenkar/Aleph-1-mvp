@@ -18,6 +18,25 @@
   }
 }
 
+.blockReadOnly {
+  cursor: pointer;
+
+  &:hover {
+    background: #dbeafe;
+  }
+}
+
+.blockSelected {
+  border-color: #16a34a;
+  border-width: 2px;
+  background: #f0fdf4;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.25);
+
+  &:hover {
+    background: #dcfce7;
+  }
+}
+
 .fading {
   opacity: 0;
   transition: opacity 500ms ease-out;
@@ -62,6 +81,12 @@
     border-color: #3b82f6;
     color: #3b82f6;
   }
+}
+
+.studentCount {
+  font-size: 0.6rem;
+  color: #6b7280;
+  margin-top: 2px;
 }
 
 .subjectBadge {

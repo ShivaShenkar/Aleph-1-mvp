@@ -172,6 +172,12 @@
   align-items: flex-end;
   gap: 8px;
   position: relative;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover {
+    opacity: 0.85;
+  }
 }
 
 .lessonPrice {

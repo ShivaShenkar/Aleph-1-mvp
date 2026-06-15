@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { fetchAuthSession } from "aws-amplify/auth";
 import styles from "@/styles/login.module.scss";
 import { handleSignIn } from "@/lib/cognitoActions";
 import { useAuthRole } from "@/lib/auth-context";
@@ -9,7 +10,26 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
   const role = useAuthRole() || "student";
+
+  useEffect(() => {
+    (async () => {
+      try {
+        await fetchAuthSession();
+        const [status] = await useAuthStore.getState().fetchUser();
+        if (status === 200) {
+          const user = useAuthStore.getState().user;
+          const targetRole = user?.roles.includes("tutor") ? "tutor" : "student";
+          navigate(`/${targetRole}`, { replace: true });
+          return;
+        }
+      } catch {
+        /* no valid session — show form */
+      }
+      setCheckingSession(false);
+    })();
+  }, [navigate]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -36,6 +56,10 @@ export default function LoginPage() {
       setError(result.message || "שגיאה בהתחברות");
       setPending(false);
     }
+  }
+
+  if (checkingSession) {
+    return <div className={styles.loading}>טוען...</div>;
   }
 
   return (

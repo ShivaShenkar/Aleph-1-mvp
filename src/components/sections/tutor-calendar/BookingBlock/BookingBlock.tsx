@@ -7,6 +7,9 @@ interface BookingBlockProps {
   block: CalendarBlock;
   style: CSSProperties;
   fading?: boolean;
+  readOnly?: boolean;
+  selected?: boolean;
+  onSelect?: (blockId: string) => void;
   onSubjectClick: (blockId: string) => void;
   onBlockClick: (blockId: string, source: "saved" | "new") => void;
 }
@@ -24,6 +27,9 @@ export default function BookingBlock({
   block,
   style,
   fading,
+  readOnly,
+  selected,
+  onSelect,
   onSubjectClick,
   onBlockClick,
 }: BookingBlockProps) {
@@ -37,9 +43,12 @@ export default function BookingBlock({
 
   return (
     <div
-      className={`${styles.block} ${fading ? styles.fading : ""}`}
+      className={`${styles.block} ${fading ? styles.fading : ""} ${readOnly ? styles.blockReadOnly : ""} ${selected ? styles.blockSelected : ""}`}
       style={{ ...style, borderLeftColor: subjectColor }}
-      onClick={() => onBlockClick(block.id, block.source)}
+      onClick={() => {
+        if (readOnly && onSelect) onSelect(block.id);
+        else if (!readOnly) onBlockClick(block.id, block.source);
+      }}
     >
       <div className={styles.inner}>
         <span className={styles.title}>{block.title}</span>
@@ -47,6 +56,11 @@ export default function BookingBlock({
         <span className={styles.duration}>
           {formatDuration(block.durationMinutes)}
         </span>
+        {!readOnly && (
+          <span className={styles.studentCount}>
+            {block.registeredCount}/{block.maxStudents}
+          </span>
+        )}
       </div>
 
       {subjectName ? (
@@ -56,7 +70,7 @@ export default function BookingBlock({
         >
           {subjectName}
         </span>
-      ) : (
+      ) : !readOnly ? (
         <button
           className={styles.subjectBtn}
           onClick={(e) => {
@@ -66,7 +80,7 @@ export default function BookingBlock({
         >
           נושא
         </button>
-      )}
+      ) : null}
     </div>
   );
 }

@@ -147,6 +147,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   clearUser: () => {
     saveUser(null);
     try { localStorage.removeItem("aleph1-bookings"); } catch { /* ignore */ }
+    try { localStorage.removeItem("aleph1-payment-details"); } catch { /* ignore */ }
     set({ user: null, initialized: true });
   },
 }));
