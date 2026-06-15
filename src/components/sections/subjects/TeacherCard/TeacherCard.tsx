@@ -1,6 +1,5 @@
 import styles from "./TeacherCard.module.scss";
 import DefaultAvatar from "@/components/ui/DefaultAvatar/DefaultAvatar";
-import Button from "@/components/ui/Button/Button";
 
 interface TeacherCardProps {
   name: string;

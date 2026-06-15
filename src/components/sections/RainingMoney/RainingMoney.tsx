@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import styles from "./RainingMoney.module.scss";
 export default function RainingMoneyBackground() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);

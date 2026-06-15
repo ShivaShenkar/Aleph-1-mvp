@@ -1,7 +1,15 @@
 import { useAuthStore } from "@/store/authStore";
-import type { LessonTypeDraft } from "@/pages/TutorSetupPage";
 import styles from "./TutorPreview.module.scss";
 import { subjects } from "@/lib/subjects";
+
+interface LessonTypeDraft {
+  LessonId: string;
+  title: string;
+  price: number;
+  durationMinutes: number;
+  maxStudents: number;
+  location: "online" | "in-person";
+}
 
 interface TutorPreviewProps {
   gender: "male" | "female" | null;
@@ -110,7 +118,7 @@ export default function TutorPreview({
         </h2>
         <div className={styles.lessonGrid}>
           {lessonTypes.map((lt) => (
-            <div key={lt.id} className={styles.lessonCard}>
+            <div key={lt.LessonId} className={styles.lessonCard}>
               <div className={styles.lessonPrice}>
                 ₪{lt.price}
               </div>

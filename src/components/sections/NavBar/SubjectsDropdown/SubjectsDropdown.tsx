@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import styles from "./SubjectsDropdown.module.scss";
 import Link from "@/components/ui/Link/Link";
