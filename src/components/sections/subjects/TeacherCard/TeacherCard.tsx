@@ -14,7 +14,7 @@ export default function TeacherCard({ name, bio }: TeacherCardProps) {
         <h4 className={styles.name}>{name}</h4>
         <p className={styles.bio}>{bio}</p>
       </div>
-      <button className={styles.bookButton}>לקביעת שיעור</button>
+      {/* <button className={styles.bookButton}>לקביעת שיעור</button> */}
     </div>
   );
 }

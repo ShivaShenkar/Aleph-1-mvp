@@ -3,34 +3,36 @@ import styles from "./Footer.module.scss";
 const navColumns = [
   [
     { text: "אודות", href: "/about" },
-    { text: "הפוך למורה", href: "/become-tutor" },
-    { text: "נושאי לימוד", href: "/subjects" },
+    
+    //{ text: "נושאי לימוד", href: "/subjects" },
   ],
   [
-    { text: "חפש שיעורים", href: "/search" },
+    //{ text: "חפש שיעורים", href: "/search" },
     { text: "כניסה למערכת", href: "/login" },
-    { text: "צור קשר", href: "/contact" },
+    //{ text: "צור קשר", href: "/contact" },
   ],
   [
-    { text: "מורים למתמטיקה", href: "/search" },
-    { text: "מורים לאנגלית", href: "/search" },
-    { text: "מורים להיסטוריה", href: "/search" },
+    //{ text: "מורים למתמטיקה", href: "/search" },
+    //{ text: "מורים לאנגלית", href: "/search" },
+    //{ text: "מורים להיסטוריה", href: "/search" },
 
   ],
   [
-    { text: "מורים לעברית", href: "/search" },
-    { text: "מורים לאזרחות", href: "/search" },
-    { text: "מורים לתנ\"ך", href: "/search" },
+    //{ text: "מורים לעברית", href: "/search" },
+    //{ text: "מורים לאזרחות", href: "/search" },
+    
+    //{ text: "מורים לתנ\"ך", href: "/search" },
+    { text: "הפוך למורה", href: "/become-tutor" },
 
   ],
   [
-    { text: "תנאי שימוש", href: "/terms" },
-    { text: "דיווח על שימוש לרעה", href: "/report" },
-    { text: "הנחיות קהילה", href: "/guidelines" },
+    //{ text: "תנאי שימוש", href: "/terms" },
+    //{ text: "דיווח על שימוש לרעה", href: "/report" },
+    //{ text: "הנחיות קהילה", href: "/guidelines" },
 
   ],
   [
-      { text: "מדיניות פרטיות", href: "/privacy" },
+      //{ text: "מדיניות פרטיות", href: "/privacy" },
   ],
 ];
 

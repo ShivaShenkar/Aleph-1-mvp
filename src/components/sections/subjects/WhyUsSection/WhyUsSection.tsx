@@ -28,10 +28,10 @@ export default function WhyUsSection() {
         </div>
         <div className={styles.illustrationCol}>
           <div className={styles.iconPlaceholder}>
-            <svg viewBox="0 0 96 96" fill="#E5E7EB">
+            {/* <svg viewBox="0 0 96 96" fill="#E5E7EB">
               <circle cx="48" cy="48" r="48" />
-            </svg>
-            <span className={styles.iconLabel}>איור / גרפיקה</span>
+            </svg> */}
+            {/*<span className={styles.iconLabel}>איור / גרפיקה</span>*/}
           </div>
         </div>
       </div>

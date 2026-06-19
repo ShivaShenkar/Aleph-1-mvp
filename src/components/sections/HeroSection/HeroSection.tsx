@@ -1,5 +1,5 @@
 import styles from "./HeroSection.module.scss";
-import Button from "@/components/ui/Button/Button";
+//import Button from "@/components/ui/Button/Button";
 import Heading from "@/components/ui/Heading/Heading";
 
 export default function HeroSection() {
@@ -19,7 +19,7 @@ export default function HeroSection() {
             כאן תוכלו למצוא את המורה שעונה בדיוק לצורך שלכם
             בלי לשבור את הראש!
           </p>
-          <Button variant="primary" size="lg" text="התחילו ללמוד עכשיו" />
+          {/* <Button variant="primary" size="lg" text="התחילו ללמוד עכשיו" /> */}
         </div>
         <div className={styles.illustrationCol}>
           <div className={styles.illustrationWrapper}>

@@ -1,6 +1,6 @@
 import styles from "./MissionSection.module.scss";
 import Heading from "@/components/ui/Heading/Heading";
-import DefaultAvatar from "@/components/ui/DefaultAvatar/DefaultAvatar";
+//import DefaultAvatar from "@/components/ui/DefaultAvatar/DefaultAvatar";
 import Section from "@/components/ui/Section/Section";
 
 export default function MissionSection() {
@@ -26,9 +26,9 @@ export default function MissionSection() {
             של הלומדים והמלמדים שלנו.
           </p>
         </div>
-        <div className={styles.illustrationCol}>
+        {/* <div className={styles.illustrationCol}>
           <DefaultAvatar size="11.5625rem" label="Graphic Design" />
-        </div>
+        </div> */}
       </div>
       </div>
     </Section>

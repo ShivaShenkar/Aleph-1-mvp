@@ -1,6 +1,6 @@
 import { Link as RouterLink } from "react-router-dom";
 import styles from "./Card.module.scss";
-import DefaultAvatar from "../DefaultAvatar/DefaultAvatar";
+//import DefaultAvatar from "../DefaultAvatar/DefaultAvatar";
 
 interface CardProps {
   title: string;
@@ -32,14 +32,14 @@ export default function Card({
           className={styles.avatarWrapper}
           style={{ width: avatarSize, height: avatarSize }}
         >
-          {image ? (
+          {/* {image ? (
             <img src={image} alt="" style={{width: '100%', height: '100%'}} />
           ) : (
             <DefaultAvatar
               size={avatarSize}
               label={text ? "לוגו" : "גרפיקה\nעיצוב"}
             />
-          )}
+          )} */}
         </div>
       </div>
       <div className={styles.contentArea}>

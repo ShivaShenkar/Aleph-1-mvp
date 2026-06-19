@@ -3,7 +3,7 @@ import Heading from "@/components/ui/Heading/Heading";
 import Section from "@/components/ui/Section/Section";
 import TeacherCard from "../TeacherCard/TeacherCard";
 import WhyUsSection from "../WhyUsSection/WhyUsSection";
-import CtaSection from "../CtaSection/CtaSection";
+//import CtaSection from "../CtaSection/CtaSection";
 
 const tutors = [
   {
@@ -50,7 +50,7 @@ export default function SubjectPage({ subjectName }: { subjectName: string }) {
         </div>
       </Section>
       <WhyUsSection />
-      <CtaSection />
+      {/* <CtaSection /> */}
     </>
   );
 }

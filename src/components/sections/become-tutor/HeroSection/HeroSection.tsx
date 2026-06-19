@@ -2,7 +2,7 @@
 import styles from "./HeroSection.module.scss";
 import Section from "@/components/ui/Section/Section";
 import Heading from "@/components/ui/Heading/Heading";
-import Button from "@/components/ui/Button/Button";
+//import Button from "@/components/ui/Button/Button";
 import RainingMoneyBackground from "@/components/sections/RainingMoney/RainingMoney";
 
 export default function HeroSection() {
@@ -17,7 +17,7 @@ export default function HeroSection() {
           <p>התחבר לתלמידים שזקוקים לידע שלך. קבע את השעות שלך.</p>
         </div>
         <div className={styles.buttons}>
-          <Button variant="primary" size="lg" text="התחילו ללמד עכשיו" />
+          {/* <Button variant="primary" size="lg" text="התחילו ללמד עכשיו" /> */}
         </div>
       </div>
     </Section>
