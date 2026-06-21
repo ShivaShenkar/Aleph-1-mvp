@@ -4,6 +4,7 @@ import StudentNavBar from "@/components/sections/StudentNavBar/StudentNavBar";
 import Heading from "@/components/ui/Heading/Heading";
 import LessonRow from "@/components/sections/student-lessons/LessonRow/LessonRow";
 import EmptyLessons from "@/components/sections/student-lessons/EmptyLessons/EmptyLessons";
+import { fetchAuthSession } from "aws-amplify/auth";
 import { useStudentBookingStore } from "@/store/studentBookingStore";
 import type { Booking, StudentSlot } from "@/models/models";
 import styles from "./StudentLessonsPage.module.scss";
@@ -13,7 +14,8 @@ function toBooking(slot: StudentSlot): Booking {
     id: slot.bookingId,
     title: slot.title,
     tutorId: slot.tutorId,
-    tutorName: slot.tutorName,
+    tutorFirstName: slot.tutorFirstName,
+    tutorLastName: slot.tutorLastName,
     subject: slot.subject,
     maxStudents: slot.maxStudents,
     bookedStudents: 0,
@@ -75,12 +77,46 @@ export default function StudentLessonsPage() {
   }, [bookings]);
 
   const [pageOffset, setPageOffset] = useState(0);
+  const [cancelLoadingId, setCancelLoadingId] = useState<string | null>(null);
+  const [cancelResult, setCancelResult] = useState<"success" | "error" | null>(null);
   const currentPage = pages[pageOffset] || [];
   const hasPast = pageOffset > 0;
   const hasFuture = pageOffset < pages.length - 1;
 
   const lessonWindow = [...currentPage].reverse();
   const now = new Date();
+
+  async function handleCancel(bookingId: string) {
+    setCancelLoadingId(bookingId);
+    setCancelResult(null);
+    try {
+      const session = await fetchAuthSession();
+      const token = session.tokens?.idToken;
+      if (!token) { setCancelResult("error"); setCancelLoadingId(null); return; }
+
+      const res = await fetch(
+        `${import.meta.env.VITE_API_GATEWAY_URL}/cancel-bookings`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ slotIds: [bookingId] }),
+        },
+      );
+
+      if (res.ok) {
+        setCancelResult("success");
+        useStudentBookingStore.getState().fetchStudentBookings();
+      } else {
+        setCancelResult("error");
+      }
+    } catch {
+      setCancelResult("error");
+    }
+    setCancelLoadingId(null);
+  }
 
   return (
     <>
@@ -98,13 +134,14 @@ export default function StudentLessonsPage() {
           <>
             <div className={styles.tableWrapper}>
               <div className={styles.headerRow}>
+                <span className={styles.headerCell}>תאריך</span>
                 <span className={styles.headerCell}>שם מורה</span>
                 <span className={styles.headerCell}>כותרת</span>
                 <span className={styles.headerCell}>מקצוע</span>
-                <span className={styles.headerCell}>משתתפים</span>
                 <span className={styles.headerCell}>התחלה</span>
                 <span className={styles.headerCell}>סיום</span>
                 <span className={styles.headerCell}>מיקום</span>
+                <span className={styles.headerCell} />
               </div>
 
               <div className={styles.list}>
@@ -113,6 +150,8 @@ export default function StudentLessonsPage() {
                     key={b.id}
                     booking={b}
                     isPast={new Date(b.startTime) <= now}
+                    cancelLoadingId={cancelLoadingId}
+                    onCancel={handleCancel}
                   />
                 ))}
               </div>
@@ -137,6 +176,26 @@ export default function StudentLessonsPage() {
               </button>
             </div>
           </>
+        )}
+
+        {cancelResult && (
+          <div className={styles.overlay} onClick={() => setCancelResult(null)}>
+            <div className={styles.dialog} onClick={(e) => e.stopPropagation()}>
+              <p className={styles.dialogText}>
+                {cancelResult === "success"
+                  ? "ההזמנה בוטלה בהצלחה"
+                  : "שגיאה בביטול ההזמנה"}
+              </p>
+              <div className={styles.dialogActions}>
+                <button
+                  className={styles.dialogConfirm}
+                  onClick={() => setCancelResult(null)}
+                >
+                  אישור
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </main>
     </>

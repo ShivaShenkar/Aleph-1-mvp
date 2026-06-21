@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "aws-amplify/auth";
-import { getUrl } from "aws-amplify/storage";
 import { useAuthStore } from "@/store/authStore";
+import TutorProfilePic from "@/components/ui/TutorProfilePic/TutorProfilePic";
 import { LogOut } from "lucide-react";
 import styles from "./ProfileArea.module.scss";
 
@@ -10,21 +10,7 @@ export default function ProfileArea() {
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [profileUrl, setProfileUrl] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!user?.profilePic) {
-      setProfileUrl(null);
-      return;
-    }
-    const key = user.profilePic.startsWith("/")
-      ? user.profilePic.slice(1)
-      : user.profilePic;
-    getUrl({ key, options: { accessLevel: "protected" } })
-      .then((result) => setProfileUrl(result.url.toString()))
-      .catch(() => setProfileUrl(null));
-  }, [user?.profilePic]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -48,24 +34,20 @@ export default function ProfileArea() {
     }
   };
 
-  const initials = user
-    ? `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`
-    : "מ";
-
   return (
     <div className={styles.wrapper} ref={menuRef}>
       <div
         className={styles.avatar}
         onClick={() => setMenuOpen((prev) => !prev)}
       >
-        {profileUrl ? (
-          <img
-            src={profileUrl}
-            alt=""
-            className={styles.avatarImg}
+        {user ? (
+          <TutorProfilePic
+            tutorId={user.userId}
+            firstName={user.firstName}
+            lastName={user.lastName}
           />
         ) : (
-          <span className={styles.initials}>{initials}</span>
+          <span className={styles.initials}>מ</span>
         )}
       </div>
       {menuOpen && (

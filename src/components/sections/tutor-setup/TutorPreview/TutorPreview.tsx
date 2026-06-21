@@ -1,4 +1,5 @@
 import { useAuthStore } from "@/store/authStore";
+import TutorProfilePic from "@/components/ui/TutorProfilePic/TutorProfilePic";
 import styles from "./TutorPreview.module.scss";
 import { subjects } from "@/lib/subjects";
 
@@ -60,6 +61,13 @@ export default function TutorPreview({
         <div className={styles.avatar}>
           {profilePicPreview ? (
             <img src={profilePicPreview} alt="" className={styles.avatarImg} />
+          ) : user ? (
+            <TutorProfilePic
+              tutorId={user.userId}
+              firstName={user.firstName}
+              lastName={user.lastName}
+              size={5}
+            />
           ) : (
             <svg viewBox="0 0 80 80" className={styles.avatarPlaceholder}>
               <circle cx="40" cy="28" r="14" fill="#fff" opacity="0.8" />

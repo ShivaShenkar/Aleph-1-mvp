@@ -5,7 +5,6 @@ import styles from "./Card.module.scss";
 interface CardProps {
   title: string;
   text?: string;
-  image?: string;
   width?: string;
   height?: string;
   href?: string;
@@ -16,7 +15,6 @@ interface CardProps {
 export default function Card({
   title,
   text,
-  image,
   width = "24.8rem",
   height = "27.25rem",
   href,

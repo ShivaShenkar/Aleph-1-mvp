@@ -16,23 +16,24 @@ function computeSlotDate(weekStart: string, day: number, halfHourIndex: number):
 
 export default function TutorDashboardPage() {
   const tutorSlots = useBookingStore((s) => s.tutorSlots);
-  const tutorSlotsLoaded = useBookingStore((s) => s.tutorSlotsLoaded);
   const fetchTutorSlots = useBookingStore((s) => s.fetchTutorSlots);
   const setUpcomingLessons = useBookingStore((s) => s.setUpcomingLessons);
   const upcomingLessons = useBookingStore((s) => s.upcomingLessons);
 
   useEffect(() => {
-    if (!tutorSlotsLoaded) fetchTutorSlots();
-  }, [tutorSlotsLoaded, fetchTutorSlots]);
+    fetchTutorSlots();
+  }, [fetchTutorSlots]);
 
   useEffect(() => {
+    const now = new Date();
     const booked: Booking[] = tutorSlots
       .filter((s) => s.registeredCount > 0)
       .map((s) => ({
         id: s.id,
         title: s.title,
         tutorId: "",
-        tutorName: "",
+        tutorFirstName: "",
+        tutorLastName: "",
         subject: s.subject ?? "",
         maxStudents: s.maxStudents,
         bookedStudents: s.registeredCount,
@@ -43,7 +44,8 @@ export default function TutorDashboardPage() {
         endTime: computeSlotDate(s.weekStart, s.day, s.endHour),
         tutorLatencyMinutes: 0,
         createdAt: new Date(),
-      }));
+      }))
+      .filter((b) => b.endTime > now);
 
     const groupsMap = new Map<string, Booking[]>();
     for (const b of booked) {

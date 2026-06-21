@@ -30,6 +30,14 @@ import type { TutorProfile } from "@/types/tutor";
     return `${start.toLocaleDateString("he-IL", opts)} – ${end.toLocaleDateString("he-IL", opts)}`;
   }
 
+  function computeSlotDate(weekStart: string, day: number, halfHourIndex: number): Date {
+    const base = new Date(weekStart);
+    base.setDate(base.getDate() + (day - 1));
+    const totalMinutes = halfHourIndex * 30;
+    base.setHours(Math.floor(totalMinutes / 60), totalMinutes % 60, 0, 0);
+    return base;
+  }
+
   const DAY_NAMES = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
 
   export default function StudentBookPage() {
@@ -85,16 +93,24 @@ import type { TutorProfile } from "@/types/tutor";
     }, [tutorId]);
 
     const weekKey = toISODate(weekStart);
+    const studentBookings = useStudentBookingStore((s) => s.bookings);
 
     const blocks: CalendarBlock[] = useMemo(() => {
       const dedup = new Map<string, SavedSlot>();
       for (const s of slots) {
-        if (s.weekStart === weekKey && !dedup.has(s.id)) {
+        if (s.weekStart !== weekKey || dedup.has(s.id) || s.registeredCount >= s.maxStudents) continue;
+
+        const slotStart = computeSlotDate(s.weekStart, s.day, s.startHour);
+        const slotEnd = computeSlotDate(s.weekStart, s.day, s.endHour);
+        const overlapsExisting = studentBookings.some(
+          (b) => new Date(b.startTime) < slotEnd && slotStart < new Date(b.endTime),
+        );
+        if (!overlapsExisting) {
           dedup.set(s.id, s);
         }
       }
       return Array.from(dedup.values()).map((s) => ({ ...s, source: "saved" as const }));
-    }, [slots, weekKey]);
+    }, [slots, weekKey, studentBookings]);
 
     const backDisabled = weekStart.getTime() <= todaySunday.getTime();
     const maxForwardSunday = new Date(todaySunday.getTime() + 21 * 86400000);
@@ -155,6 +171,18 @@ import type { TutorProfile } from "@/types/tutor";
           setSelectedSlotIds([]);
           setBookingSuccess(true);
           useStudentBookingStore.getState().fetchStudentBookings();
+          const freshRes = await fetch(
+            `${import.meta.env.VITE_API_GATEWAY_URL}/get-bookings?tutorId=${tutorId}`,
+            { headers: { Authorization: `Bearer ${token}` } },
+          );
+          if (freshRes.ok) {
+            const raw = await freshRes.json();
+            const data: SavedSlot[] = raw.map(
+              ({ BookingId: id, TutorId: _t, createdAt: _c, ...rest }: Record<string, unknown>) =>
+                ({ id, ...rest } as SavedSlot),
+            );
+            setSlots(data);
+          }
         } else {
           const text = await res.text();
           setBookingError(text || "שגיאה בהזמנה");

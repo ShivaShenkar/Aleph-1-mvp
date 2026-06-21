@@ -44,7 +44,7 @@ export default function DayCard({ group }: DayCardProps) {
               {getSubjectName(booking.subject)}
             </span>
             <p className={styles.lessonTitle}>{booking.title}</p>
-            <p className={styles.tutorName}>{booking.tutorName}</p>
+            <p className={styles.tutorName}>{`${booking.tutorFirstName} ${booking.tutorLastName}`}</p>
             <p className={styles.lessonTime}>
               {new Date(booking.startTime).toLocaleTimeString("he-IL", {
                 hour: "2-digit",

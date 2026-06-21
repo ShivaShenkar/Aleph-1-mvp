@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetchAuthSession } from "aws-amplify/auth";
-import { getUrl } from "aws-amplify/storage";
+import TutorProfilePic from "@/components/ui/TutorProfilePic/TutorProfilePic";
 import StudentNavBar from "@/components/sections/StudentNavBar/StudentNavBar";
 import { subjects } from "@/lib/subjects";
 import type { TutorProfile } from "@/types/tutor";
@@ -34,8 +34,6 @@ export default function TutorProfilePage() {
   const navigate = useNavigate();
   const [tutor, setTutor] = useState<TutorProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [imgUrl, setImgUrl] = useState<string | null>(null);
-
   useEffect(() => {
     if (!id) return;
     setLoading(true);
@@ -56,16 +54,6 @@ export default function TutorProfilePage() {
       setLoading(false);
     })();
   }, [id]);
-
-  useEffect(() => {
-    if (!tutor?.profilePic) return;
-    getUrl({
-      key: tutor.profilePic.replace(/^\//, ""),
-      options: { accessLevel: "protected" },
-    })
-      .then((res) => setImgUrl(res.url.toString()))
-      .catch(() => {});
-  }, [tutor?.profilePic]);
 
   if (loading) {
     return (
@@ -102,16 +90,12 @@ export default function TutorProfilePage() {
         <div className={styles.wrapper}>
           {/* Profile Header */}
           <div className={styles.header}>
-            <div className={styles.avatar}>
-              {imgUrl ? (
-                <img src={imgUrl} alt="" className={styles.avatarImg} />
-              ) : (
-                <svg viewBox="0 0 80 80" className={styles.placeholderSvg}>
-                  <circle cx="40" cy="28" r="14" fill="#fff" opacity="0.8" />
-                  <ellipse cx="40" cy="60" rx="24" ry="18" fill="#fff" opacity="0.8" />
-                </svg>
-              )}
-            </div>
+            <TutorProfilePic
+              tutorId={tutor.userId}
+              firstName={tutor.firstName}
+              lastName={tutor.lastName}
+              size={5}
+            />
             <div className={styles.headerInfo}>
               <h1 className={styles.name}>
                 {tutor.firstName} {tutor.lastName}

@@ -28,7 +28,8 @@ interface Booking {
     id: string;
     title:string;
     tutorId: string;
-    tutorName: string;
+    tutorFirstName: string;
+    tutorLastName: string;
     subject: string;
     maxStudents: number;
     bookedStudents: number;
@@ -45,7 +46,8 @@ interface StudentSlot{
     bookingId: string;
     title:string;
     tutorId:string;
-    tutorName:string;
+    tutorFirstName:string;
+    tutorLastName:string;
     subject: string;
     maxStudents: number;
     durationMinutes: number;

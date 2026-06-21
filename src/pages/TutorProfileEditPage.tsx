@@ -1,7 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { fetchAuthSession } from "aws-amplify/auth";
-import { getUrl } from "aws-amplify/storage";
 import TutorForm from "@/components/sections/tutor-setup/TutorForm/TutorForm";
 import TutorPreview from "@/components/sections/tutor-setup/TutorPreview/TutorPreview";
 import { type LessonType } from "@/models/models";
@@ -20,16 +19,6 @@ export default function TutorProfileEditPage() {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!currentUser?.profilePic) return;
-    const key = currentUser.profilePic.startsWith("/")
-      ? currentUser.profilePic.slice(1)
-      : currentUser.profilePic;
-    getUrl({ key, options: { accessLevel: "protected" } })
-      .then((result) => setProfilePicPreview(result.url.toString()))
-      .catch(() => {});
-  }, [currentUser?.profilePic]);
 
   const handleProfilePic = useCallback((file: File) => {
     setProfilePic(file);
@@ -114,15 +103,16 @@ export default function TutorProfileEditPage() {
         if (!token || !sub) return false;
 
         if (profilePic) {
-          const photoResponse = await fetch(`${import.meta.env.VITE_API_GATEWAY_URL}/upload-tutor-photo`, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": profilePic.type,
-            },
-            body: profilePic,
-          });
-          if (!photoResponse.ok) return false;
+        const photoResponse = await fetch(`${import.meta.env.VITE_API_GATEWAY_URL}/upload-tutor-photo`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": profilePic.type, // e.g., 'image/jpeg'
+            "Accept": "*/*",                 // CRUCIAL: Forces API Gateway to honor binary pathways
+          },
+          body: profilePic,
+        });
+        if (!photoResponse.ok) return false;
         }
 
         const payload = {
@@ -165,6 +155,7 @@ export default function TutorProfileEditPage() {
         gender: (currentUser?.gender as "male" | "female") ?? "male",
         subjects: selectedSubjects,
         bio,
+        lessonTypes,
       });
     } else {
       alert("העלאה נכשלה, אנא נסה שנית");

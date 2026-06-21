@@ -38,8 +38,9 @@ function mapApiItem(item: Record<string, unknown>): StudentSlot {
   return {
     bookingId: (item.BookingId ?? item.bookingId) as string,
     studentId: (item.StudentId ?? item.studentId) as string,
-    tutorId: item.tutorId as string,
-    tutorName: (item.tutorName as string) ?? "",
+    tutorId: (item.TutorId ?? item.tutorId) as string,
+    tutorFirstName: (item.TutorFirstName ?? item.tutorFirstName ?? "") as string,
+    tutorLastName: (item.TutorLastName ?? item.tutorLastName ?? "") as string,
     subject: (item.subject as string) ?? "",
     maxStudents: (item.maxStudents as number) ?? 1,
     durationMinutes: item.durationMinutes as number,
@@ -60,6 +61,7 @@ interface StudentBookingStore {
   loading: boolean;
   loaded: boolean;
   fetchStudentBookings: () => Promise<void>;
+  reset: () => void;
 }
 
 export const useStudentBookingStore = create<StudentBookingStore>((set) => ({
@@ -93,4 +95,6 @@ export const useStudentBookingStore = create<StudentBookingStore>((set) => ({
       set({ loading: false, loaded: true });
     }
   },
-}));
+  reset: () => set({ bookings: [], loading: false, loaded: false }),
+  }
+));

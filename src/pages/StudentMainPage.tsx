@@ -14,7 +14,8 @@ function toBooking(slot: StudentSlot): Booking {
     id: slot.bookingId,
     title: slot.title,
     tutorId: slot.tutorId,
-    tutorName: slot.tutorName,
+    tutorFirstName: slot.tutorFirstName,
+    tutorLastName: slot.tutorLastName,
     subject: slot.subject,
     maxStudents: slot.maxStudents,
     bookedStudents: 0,
@@ -29,8 +30,10 @@ function toBooking(slot: StudentSlot): Booking {
 }
 
 function groupByNearestDays(slots: StudentSlot[]): DayGroup[] {
+  const now = new Date();
   const bookings = slots
     .map(toBooking)
+    .filter((b) => new Date(b.endTime) > now)
     .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
 
   const groups: DayGroup[] = [];

@@ -45,6 +45,7 @@ interface BookingStore {
   tutorSlotsLoading: boolean;
   fetchTutorSlots: () => Promise<void>;
   applyTutorSlotChanges: (added: CalendarBlock[], deletedIds: string[]) => void;
+  reset: () => void;
 }
 
 const cached = loadCachedData();
@@ -62,8 +63,6 @@ export const useBookingStore = create<BookingStore>((set, get) => ({
   tutorSlotsLoaded: cached !== null,
   tutorSlotsLoading: false,
   fetchTutorSlots: async () => {
-    const { tutorSlotsLoaded } = get();
-    if (tutorSlotsLoaded) return;
     set({ tutorSlotsLoading: true });
     try {
       const session = await fetchAuthSession();
@@ -107,4 +106,12 @@ export const useBookingStore = create<BookingStore>((set, get) => ({
     set({ tutorSlots: updated });
     saveCachedData(updated);
   },
+  reset: () =>
+    set({
+      upcomingLessons: [],
+      allLessonsMat: [],
+      tutorSlots: [],
+      tutorSlotsLoaded: false,
+      tutorSlotsLoading: false,
+    }),
 }));

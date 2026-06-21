@@ -161,6 +161,7 @@ export default function TutorSetupPage() {
         gender: gender!,
         subjects: selectedSubjects,
         bio,
+        lessonTypes,
       });
       navigate("/tutor");
     } else {

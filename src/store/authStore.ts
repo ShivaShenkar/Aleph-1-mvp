@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import { fetchAuthSession } from "aws-amplify/auth";
+import { useBookingStore } from "@/store/bookingStore";
+import { useStudentBookingStore } from "@/store/studentBookingStore";
 import {type LessonType } from "@/models/models";
 
 const STORAGE_KEY = "aleph1-auth";
@@ -78,6 +80,7 @@ export interface SetupData {
   gender: "male" | "female";
   subjects: string[];
   bio: string;
+  lessonTypes: LessonType[];
 }
 
 interface AuthState {
@@ -147,7 +150,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   clearUser: () => {
     saveUser(null);
     try { localStorage.removeItem("aleph1-bookings"); } catch { /* ignore */ }
+    try { localStorage.removeItem("aleph1-student-bookings"); } catch { /* ignore */ }
     try { localStorage.removeItem("aleph1-payment-details"); } catch { /* ignore */ }
+    useBookingStore.getState().reset();
+    useStudentBookingStore.getState().reset();
     set({ user: null, initialized: true });
   },
 }));
